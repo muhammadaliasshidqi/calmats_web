@@ -1,32 +1,34 @@
-<footer class="border-t border-mist">
-  <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 md:grid-cols-12 lg:px-10">
-    <div class="md:col-span-5">
-      <a href="{{ route('home') }}" class="text-lg font-bold tracking-[0.28em]">CALMATS</a>
-      <p class="mt-4 max-w-xs text-sm text-stone">Tenang itu sikap, bukan diam.</p>
+<footer class="border-t border-ink/15">
+  <div class="mx-auto grid max-w-[1440px] items-start gap-10 px-5 py-14 md:grid-cols-[1fr_auto_1fr] md:items-center lg:px-12">
+    <div>
+      <a href="{{ route('home') }}" class="font-serif text-2xl tracking-[-0.03em]">CALMATS</a>
+      <p class="mt-4 max-w-xs text-xs uppercase leading-5 tracking-[0.16em] text-stone">Indonesian streetwear personality.</p>
     </div>
-    <nav class="md:col-span-3" aria-label="Footer">
-      <ul class="space-y-3 text-sm">
-        @foreach (['Home' => 'home', 'Shop' => 'shop', 'About' => 'about', 'Community' => 'community'] as $l => $n)
-          <li><a href="{{ route($n) }}" class="hover:text-accent">{{ $l }}</a></li>
+
+    <nav aria-label="Footer">
+      <ul class="flex flex-wrap items-center gap-x-7 gap-y-3 text-xs font-semibold uppercase tracking-[0.14em] md:justify-center lg:gap-x-10">
+        @foreach (['Home' => 'home', 'Shop' => 'shop', 'About' => 'about', 'Community' => 'community'] as $label => $name)
+          <li><a href="{{ route($name) }}" class="transition-colors hover:text-accent">{{ $label }}</a></li>
         @endforeach
       </ul>
     </nav>
-    <ul class="space-y-3 text-sm md:col-span-4">
+
+    <ul class="flex flex-wrap gap-x-6 gap-y-3 text-xs uppercase tracking-[0.14em] md:justify-end md:text-right">
       <li>
         @if (config('calmats.whatsapp_url'))
-          <a href="{{ config('calmats.whatsapp_url') }}" target="_blank" rel="noopener" class="hover:text-accent">WhatsApp</a>
+          <a href="{{ config('calmats.whatsapp_url') }}" target="_blank" rel="noopener" class="transition-colors hover:text-accent">WhatsApp</a>
         @else
           <span class="text-stone">WhatsApp — segera hadir</span>
         @endif
       </li>
       <li>
         @if (config('calmats.instagram_url'))
-          <a href="{{ config('calmats.instagram_url') }}" target="_blank" rel="noopener" class="hover:text-accent">Instagram</a>
+          <a href="{{ config('calmats.instagram_url') }}" target="_blank" rel="noopener" class="transition-colors hover:text-accent">Instagram</a>
         @else
           <span class="text-stone">Instagram — segera hadir</span>
         @endif
       </li>
     </ul>
   </div>
-  <p class="border-t border-mist px-5 py-6 text-center text-xs text-stone">&copy; {{ date('Y') }} CALMATS. Seluruh hak cipta dilindungi.</p>
+  <p class="border-t border-ink/10 px-5 py-6 text-center text-[0.65rem] uppercase tracking-[0.16em] text-stone">&copy; {{ date('Y') }} CALMATS. Seluruh hak cipta dilindungi.</p>
 </footer>

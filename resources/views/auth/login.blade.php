@@ -1,11 +1,18 @@
 <x-layouts.app title="Login — CALMATS">
   <section class="mx-auto grid min-h-[70vh] max-w-7xl px-5 py-16 lg:grid-cols-2 lg:px-10 lg:py-24">
-    <div class="hidden bg-ink p-12 text-paper lg:flex lg:flex-col lg:justify-between">
-      <p class="text-xs uppercase tracking-[0.2em] text-paper/60">CALMATS Account</p>
-      <p class="max-w-md font-serif text-5xl leading-tight">Keep your favorites close and your movement effortless.</p>
+    <div class="relative hidden overflow-hidden rounded-[1.75rem] bg-ink text-paper lg:flex lg:flex-col lg:justify-between lg:rounded-r-none">
+      <div class="absolute inset-0">
+        <x-img class="h-full w-full !rounded-none" src="images/calmats/preview-about.png" alt="Proses pembuatan koleksi CALMATS" label="Foto proses CALMATS belum tersedia" />
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/20"></div>
+      <p class="relative z-10 p-12 text-xs uppercase tracking-[0.2em] text-paper/70">CALMATS Account / 01</p>
+      <div class="relative z-10 p-12">
+        <p class="mb-5 h-px w-12 bg-accent"></p>
+        <p class="max-w-md font-serif text-5xl italic leading-[0.95]">Keep your favorites close and your movement effortless.</p>
+      </div>
     </div>
 
-    <div class="flex items-center justify-center border border-mist p-7 sm:p-12">
+    <div class="flex items-center justify-center rounded-[1.75rem] border border-mist p-7 sm:p-12 lg:rounded-l-none">
       <div class="w-full max-w-md">
         <p class="text-xs font-medium uppercase tracking-[0.2em] text-stone">Welcome back</p>
         <h1 class="mt-4 font-serif text-5xl tracking-tight">Login</h1>

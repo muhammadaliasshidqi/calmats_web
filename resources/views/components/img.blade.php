@@ -5,7 +5,7 @@
     ? \Illuminate\Support\Facades\Storage::disk('public')->url($src)
     : ($src ? asset($src) : null);
 @endphp
-<div {{ $attributes->merge(['class' => 'relative overflow-hidden bg-mist']) }} x-data="{ ok: @js((bool) $src) }">
+<div {{ $attributes->merge(['class' => 'relative overflow-hidden rounded-[1.5rem] bg-mist']) }} x-data="{ ok: @js((bool) $src) }">
   @if ($src)
     <img src="{{ $url }}" alt="{{ $alt }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover" x-show="ok" x-on:error="ok = false">
   @endif

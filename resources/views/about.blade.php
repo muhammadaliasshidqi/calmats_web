@@ -9,9 +9,9 @@
     </div>
   </section>
 
-  <section class="bg-ink text-paper">
+  <section class="mx-3 overflow-hidden rounded-[1.75rem] bg-ink text-paper sm:mx-5 lg:mx-8">
     <div class="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-2 lg:px-10 lg:py-28">
-      <x-img class="aspect-[4/5]" src="images/calmats/story.jpg" alt="Proses dan detail CALMATS" label="Foto proses CALMATS belum tersedia" />
+      <x-img class="aspect-[4/5]" src="images/calmats/preview-about.png" alt="Proses penandaan dan pemotongan bahan CALMATS" label="Foto proses CALMATS belum tersedia" />
       <div class="self-center lg:px-10">
         <p class="text-xs uppercase tracking-[0.2em] text-paper/60">Our point of view</p>
         <h2 class="mt-5 font-serif text-5xl tracking-tight">Dibuat untuk menemani, bukan mendominasi.</h2>

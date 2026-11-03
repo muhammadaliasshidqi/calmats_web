@@ -25,4 +25,13 @@ class AdminProductTest extends TestCase
             ->assertOk()
             ->assertSee('Produk Uji CALMATS');
     }
+
+    public function test_authenticated_user_can_open_admin_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get('/admin')
+            ->assertOk()
+            ->assertSee('Control room')
+            ->assertSee('Kelola katalog CALMATS dari satu tempat.');
+    }
 }

@@ -3,25 +3,105 @@
 @theme {
   --font-sans: 'Familjen Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Newsreader', Georgia, serif;
-  --color-paper: #f7f6f3;
-  --color-ink: #1d1e20;
-  --color-mist: #e4e2dd;
-  --color-stone: #85847f;
-  --color-accent: #4d5b62;
+  --color-paper: #f4f0ea;
+  --color-ink: #191613;
+  --color-mist: #e4ded6;
+  --color-stone: #746f68;
+  --color-accent: #7b171c;
 }
 
 @layer base {
   html { scroll-behavior: smooth; }
+  body { min-width: 320px; }
+  input:not([type='checkbox']):not([type='radio']), select, textarea { border-radius: .875rem; }
+  input[type='checkbox'], input[type='radio'] { border-radius: .3rem; }
+  ::selection { background: var(--color-accent); color: var(--color-paper); }
   :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
   [x-cloak] { display: none !important; }
 }
 
 @layer components {
-  .btn { @apply inline-flex items-center justify-center px-7 py-3.5 text-xs font-medium uppercase tracking-[0.18em] transition-colors duration-300; }
+  .btn { @apply inline-flex items-center justify-center rounded-full px-7 py-3.5 text-xs font-medium uppercase tracking-[0.18em] transition-colors duration-300; }
   .btn-solid { @apply bg-ink text-paper hover:bg-accent; }
+  .btn-accent { @apply bg-accent text-paper hover:bg-ink; }
   .btn-line { @apply border border-ink text-ink hover:bg-ink hover:text-paper; }
   .link-line { @apply border-b border-ink pb-1 text-xs font-medium uppercase tracking-[0.18em] transition-colors hover:border-accent hover:text-accent; }
+  .nav-link { @apply text-[0.7rem] font-semibold uppercase tracking-[0.18em] transition-colors hover:text-accent; }
+  .eyebrow { @apply text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-accent; }
 }
+
+.premium-page {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(rgba(25, 22, 19, .035) .65px, transparent .65px);
+  background-size: 5px 5px;
+}
+
+.hero-editorial {
+  border-radius: 1.75rem;
+  box-shadow: 0 22px 70px rgba(34, 26, 21, .16);
+}
+
+.product-media {
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: #eee9e2;
+  box-shadow: 0 13px 30px rgba(40, 31, 25, .12), 0 2px 5px rgba(40, 31, 25, .07);
+  transition: box-shadow .4s ease, transform .4s ease;
+}
+
+.group:hover .product-media {
+  box-shadow: 0 19px 38px rgba(40, 31, 25, .16), 0 3px 8px rgba(40, 31, 25, .08);
+  transform: translateY(-3px);
+}
+
+.community-media {
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: #e9e3db;
+  box-shadow: 0 14px 35px rgba(40, 31, 25, .14), 0 3px 8px rgba(40, 31, 25, .08);
+}
+
+.community-media:nth-child(2) { box-shadow: 0 20px 42px rgba(40, 31, 25, .17), 0 4px 10px rgba(40, 31, 25, .09); }
+.community-media:nth-child(3) { box-shadow: 0 11px 27px rgba(40, 31, 25, .12), 0 2px 6px rgba(40, 31, 25, .07); }
+
+.shop-quiet-panel {
+  border-radius: 1.75rem;
+  background-color: #751b20;
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, .08) 0, transparent 24%),
+    radial-gradient(circle at 82% 75%, rgba(20, 8, 8, .18) 0, transparent 30%),
+    repeating-linear-gradient(118deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 5px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 20px 50px rgba(59, 19, 20, .18);
+}
+
+.shop-quiet-word {
+  color: rgba(244, 240, 234, .14);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+.community-forest-panel,
+.community-invite {
+  border-radius: 1.75rem;
+  background-color: #2f3a32;
+  background-image:
+    radial-gradient(circle at 78% 18%, rgba(255, 255, 255, .07) 0, transparent 25%),
+    repeating-linear-gradient(125deg, rgba(255, 255, 255, .014) 0 1px, transparent 1px 6px);
+}
+
+.community-gallery-card {
+  overflow: hidden;
+  border-radius: 1.5rem;
+  box-shadow: 0 16px 38px rgba(40, 31, 25, .14), 0 3px 8px rgba(40, 31, 25, .07);
+  transition: box-shadow .4s ease;
+}
+
+.community-gallery-card:hover {
+  box-shadow: 0 22px 46px rgba(40, 31, 25, .18), 0 4px 11px rgba(40, 31, 25, .09);
+}
+
+.community-tone-clay { background-color: #b97961; color: #241b17; }
+.community-tone-sage { background-color: #aeb8a7; color: #20271f; }
+.community-tone-wine { background-color: #7b2529; color: #f4f0ea; }
 
 /* Satu momen animasi: wordmark hero naik saat halaman dibuka */
 @keyframes rise { from { transform: translateY(40%); opacity: 0; } to { transform: none; opacity: 1; } }

@@ -20,7 +20,7 @@
           <legend class="text-xs font-medium uppercase tracking-[0.16em]">Pilih ukuran</legend>
           <div class="mt-4 flex flex-wrap gap-2">
             @foreach ($product['sizes'] as $size)
-              <button type="button" x-on:click="size = '{{ $size }}'; added = false" :class="size === '{{ $size }}' ? 'bg-ink text-paper' : 'border border-mist hover:border-ink'" class="min-w-12 px-4 py-3 text-sm transition-colors">{{ $size }}</button>
+              <button type="button" x-on:click="size = '{{ $size }}'; added = false" :class="size === '{{ $size }}' ? 'bg-ink text-paper' : 'border border-mist hover:border-ink'" class="min-w-12 rounded-full px-4 py-3 text-sm transition-colors">{{ $size }}</button>
             @endforeach
           </div>
         </fieldset>

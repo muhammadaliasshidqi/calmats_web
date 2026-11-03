@@ -1,0 +1,212 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+:root {
+    --calmats-paper: #f4f0ea;
+    --calmats-ink: #191613;
+    --calmats-accent: #7b171c;
+}
+
+.fi-panel-admin {
+    --gray-400: #857c74;
+    --gray-500: #675f58;
+    --gray-600: #4f4943;
+    --gray-700: #3d3833;
+    --gray-900: #211d1a;
+    --gray-950: #151210;
+    color: var(--calmats-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.fi-body {
+    background-color: var(--calmats-paper);
+    background-image: radial-gradient(rgba(25, 22, 19, .035) .65px, transparent .65px);
+    background-size: 5px 5px;
+}
+
+.fi-sidebar {
+    background: rgba(255, 253, 249, .94);
+    border-right-color: rgba(25, 22, 19, .08);
+}
+
+.fi-topbar nav {
+    background: rgba(244, 240, 234, .88);
+    border-bottom-color: rgba(25, 22, 19, .08);
+    backdrop-filter: blur(16px);
+}
+
+.fi-wi-stats-overview-stat,
+.fi-ta-ctn {
+    border-radius: 1.5rem;
+    border-color: rgba(25, 22, 19, .08);
+    box-shadow: 0 18px 45px rgba(25, 22, 19, .07);
+}
+
+.fi-ta-ctn {
+    overflow: hidden;
+}
+
+.fi-wi-stats-overview-stat {
+    background: rgba(255, 253, 249, .9);
+}
+
+.fi-header-heading {
+    font-family: Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -.035em;
+    color: var(--calmats-ink);
+}
+
+.fi-panel-admin .fi-header-subheading,
+.fi-panel-admin .fi-ta-header-description,
+.fi-panel-admin .fi-ta-empty-state-description,
+.fi-panel-admin .fi-section-description,
+.fi-panel-admin .fi-wi-stats-overview-stat-label,
+.fi-panel-admin .fi-wi-stats-overview-stat-description {
+    color: #514a44;
+    font-weight: 500;
+}
+
+.fi-panel-admin .fi-sidebar-item-label,
+.fi-panel-admin .fi-ta-header-heading,
+.fi-panel-admin .fi-ta-header-cell-label,
+.fi-panel-admin .fi-ta-empty-state-heading,
+.fi-panel-admin .fi-wi-stats-overview-stat-value {
+    color: var(--calmats-ink);
+}
+
+.fi-panel-admin .fi-ta-header-cell-label,
+.fi-panel-admin .fi-sidebar-item-label {
+    font-weight: 600;
+}
+
+.fi-panel-admin .fi-input,
+.fi-panel-admin .fi-select-input,
+.fi-panel-admin .fi-ta-text-item-label {
+    color: #28231f;
+    font-weight: 500;
+}
+
+.fi-panel-admin .fi-input::placeholder {
+    color: #716860;
+    opacity: 1;
+}
+
+.fi-sidebar-nav-groups {
+    gap: 1rem;
+}
+
+.fi-sidebar-item-button {
+    border-radius: .9rem;
+}
+
+.fi-simple-layout {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--calmats-paper);
+    background-image: radial-gradient(rgba(25, 22, 19, .04) .65px, transparent .65px);
+    background-size: 5px 5px;
+}
+
+.fi-simple-layout::before {
+    content: '';
+    position: fixed;
+    inset: 1.25rem auto 1.25rem 1.25rem;
+    width: calc(50% - 1.875rem);
+    border-radius: 1.75rem;
+    background:
+        linear-gradient(180deg, rgba(25, 22, 19, .08), rgba(25, 22, 19, .68)),
+        url('/images/calmats/preview-about.png') center / cover no-repeat;
+    box-shadow: 0 24px 70px rgba(35, 24, 20, .2);
+}
+
+.fi-simple-layout::after {
+    content: 'CALMATS / ADMIN';
+    position: fixed;
+    left: 4rem;
+    bottom: 4rem;
+    z-index: 1;
+    color: #f4f0ea;
+    font-family: Georgia, serif;
+    font-size: clamp(2rem, 4vw, 4.75rem);
+    font-style: italic;
+    letter-spacing: -.04em;
+}
+
+.fi-simple-main-ctn {
+    position: relative;
+    z-index: 2;
+}
+
+.fi-simple-main {
+    max-width: 32rem;
+    border-radius: 1.75rem;
+    background: rgba(255, 253, 249, .9);
+    padding: 3rem;
+    box-shadow: 0 24px 65px rgba(43, 31, 24, .14);
+    backdrop-filter: blur(14px);
+}
+
+.fi-logo {
+    font-family: Georgia, serif;
+    font-size: 1.45rem;
+    letter-spacing: -.025em;
+}
+
+.fi-simple-header-heading {
+    font-family: Georgia, serif;
+    font-size: 2.25rem;
+    font-weight: 400;
+    letter-spacing: -.035em;
+}
+
+.fi-simple-header-subheading {
+    color: #746f68;
+}
+
+.fi-input-wrp {
+    border-radius: .9rem;
+    box-shadow: 0 0 0 1px rgba(25, 22, 19, .12);
+}
+
+.fi-btn {
+    border-radius: 999px;
+}
+
+.fi-btn.fi-color-primary {
+    background-color: var(--calmats-accent);
+    color: #fff;
+    --text: #fff;
+    --hover-text: #fff;
+}
+
+.fi-btn.fi-color-primary .fi-btn-label,
+.fi-btn.fi-color-primary .fi-icon {
+    color: #fff;
+}
+
+.fi-btn.fi-color-primary:hover {
+    background-color: #921f25;
+}
+
+@media (min-width: 64rem) {
+    .fi-simple-main-ctn {
+        width: 50%;
+        margin-left: 50%;
+    }
+}
+
+@media (max-width: 63.999rem) {
+    .fi-simple-layout::before,
+    .fi-simple-layout::after {
+        display: none;
+    }
+
+    .fi-simple-main {
+        margin-inline: 1rem;
+        padding: 2rem;
+    }
+}
