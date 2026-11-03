@@ -2,7 +2,7 @@
 
 Landing page untuk **CALMATS**, brand fashion dengan estetika elegan, minimalist, dan streetwear yang membawa cerita di setiap produk.
 
-Tahap saat ini: **storefront prototype**. Homepage, katalog, detail produk, halaman brand, community, cart browser, dan login Laravel sudah tersedia. Dashboard admin dan checkout belum dibuat.
+Tahap saat ini: **storefront dengan pengelolaan produk**. Homepage, katalog database, detail produk, halaman brand, community, cart browser, login Laravel, dan dashboard admin Filament sudah tersedia. Checkout belum dibuat.
 
 ## Teknologi
 
@@ -13,8 +13,10 @@ Tahap saat ini: **storefront prototype**. Homepage, katalog, detail produk, hala
 | Styling | Tailwind CSS v4 |
 | Interaksi | Alpine.js |
 | Bundler | Vite |
+| Dashboard admin | Filament 4 |
+| Database lokal | SQLite (struktur kompatibel PostgreSQL) |
 
-Rencana tahap berikutnya (belum dikerjakan): Filament untuk dashboard admin, PostgreSQL sebagai database.
+Database lokal tetap memakai SQLite agar mudah dijalankan. Untuk deployment, koneksi dapat dipindahkan ke PostgreSQL lewat `.env` tanpa mengubah model Produk.
 
 ## Yang sudah jadi
 
@@ -24,15 +26,16 @@ Rencana tahap berikutnya (belum dikerjakan): Filament untuk dashboard admin, Pos
 - Halaman About dan Community
 - Cart persisten di browser (localStorage), termasuk jumlah item dan subtotal
 - Login/logout menggunakan autentikasi Laravel
+- Model, migration, dan factory Produk
+- Dashboard admin Filament untuk CRUD produk dan upload foto
 - Tampilan responsif (desktop, tablet, smartphone)
 - Fallback otomatis: kalau foto belum ada, tampil kotak abu-abu berlabel "placeholder"
 
 ## Yang belum jadi
 
-- Data produk di `config/calmats.php` masih merupakan **katalog konsep**, bukan data produk resmi atau database.
+- Katalog produk sengaja masih kosong sampai data dan foto resmi CALMATS tersedia.
 - Cart masih tersimpan di browser; belum tersinkron ke akun atau backend.
 - Checkout, pembayaran, ongkir, pendaftaran akun publik, dan lupa kata sandi belum dibuat.
-- Dashboard admin/Filament dan pengelolaan produk belum dibuat.
 - URL WhatsApp dan Instagram resmi perlu diisi lewat `.env`.
 - Foto asli (hero, story, editorial, komunitas, dan produk) belum ada.
 
@@ -74,7 +77,7 @@ php artisan key:generate
 
 ### 5. Siapkan database bawaan
 
-Proyek ini memakai SQLite bawaan Laravel (hanya untuk sesi, belum ada tabel produk).
+Proyek ini memakai SQLite bawaan Laravel untuk pengembangan lokal. Jalankan migration:
 
 ```bash
 php artisan migrate
@@ -96,6 +99,22 @@ php artisan serve
 
 Buka **http://127.0.0.1:8000** di browser.
 
+### 7. Siapkan akun dashboard admin
+
+Buat akun melalui perintah interaktif berikut:
+
+```bash
+php artisan make:filament-user
+```
+
+Isi nama, email, dan password milik pengelola. Setelah selesai, buka **http://127.0.0.1:8000/admin**. Pendaftaran akun publik sengaja belum diaktifkan, sehingga hanya akun yang dibuat pengelola yang dapat masuk.
+
+Jika ingin mengunggah foto produk, pastikan link storage sudah dibuat:
+
+```bash
+php artisan storage:link
+```
+
 ## Struktur penting
 
 ```
@@ -108,7 +127,10 @@ resources/views/about.blade.php             -> cerita dan prinsip brand
 resources/views/community.blade.php         -> halaman komunitas
 resources/views/cart.blade.php              -> keranjang berbasis browser
 resources/views/auth/login.blade.php        -> login Laravel
-config/calmats.php                          -> katalog konsep dan URL sosial
+app/Models/Product.php                     -> model katalog produk
+database/migrations/*create_products*      -> struktur tabel produk
+app/Filament/Resources/Products/           -> CRUD produk dashboard admin
+config/calmats.php                          -> URL sosial
 resources/views/components/
   layouts/app.blade.php                     -> kerangka HTML semua halaman
   navbar, hero, featured-collection,
@@ -143,6 +165,21 @@ CALMATS_INSTAGRAM_URL=https://instagram.com/namaakun
 
 Jika belum diisi, footer akan menampilkan status "segera hadir" dan tidak mengarah ke tautan generik.
 
+## PostgreSQL untuk deployment
+
+Struktur tabel Produk dapat digunakan di PostgreSQL. Siapkan database PostgreSQL, lalu ubah bagian database pada `.env`:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=calmats
+DB_USERNAME=postgres
+DB_PASSWORD=kata_sandi_database
+```
+
+Setelah koneksi tersedia, jalankan `php artisan migrate`. Jangan menyimpan password database asli di `.env.example` atau Git.
+
 ## Desain (jangan diubah tanpa diskusi)
 
 - Warna: latar `#F7F6F3`, teks `#1D1E20`, abu muda `#E4E2DD`, aksen `#4D5B62`. Didefinisikan di `resources/css/app.css`.
@@ -151,9 +188,9 @@ Jika belum diisi, footer akan menampilkan status "segera hadir" dan tidak mengar
 
 ## Ide langkah berikutnya
 
-1. Ganti katalog konsep dengan data produk resmi
-2. Tambahkan foto asli CALMATS
-3. Backend: model Produk, database PostgreSQL, dashboard admin Filament
+1. Masukkan data produk resmi melalui dashboard admin
+2. Tambahkan foto asli CALMATS melalui dashboard admin
+3. Siapkan server PostgreSQL untuk deployment
 4. Sinkronisasi cart ke akun dan proses checkout
 5. Registrasi akun, lupa kata sandi, serta riwayat pesanan
 

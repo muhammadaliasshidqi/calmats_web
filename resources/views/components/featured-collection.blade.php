@@ -1,5 +1,10 @@
 @php
-  $products = collect(config('calmats.products'))->where('featured', true)->take(4);
+  $products = \App\Models\Product::query()
+    ->where('is_active', true)
+    ->where('is_featured', true)
+    ->orderBy('sort_order')
+    ->take(4)
+    ->get();
 @endphp
 <section class="mx-auto max-w-7xl px-5 py-24 lg:px-10">
   <div class="flex items-end justify-between gap-6">

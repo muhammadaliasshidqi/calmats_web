@@ -6,7 +6,7 @@
   <div class="mt-4 flex items-start justify-between gap-4">
     <div>
       <h3 class="text-base font-medium">{{ $p['name'] }}</h3>
-      <p class="mt-1 text-sm text-stone">{{ $p['stock'] }}</p>
+      <p class="mt-1 text-sm text-stone">{{ $p['stock_label'] }}</p>
     </div>
     <p class="whitespace-nowrap text-sm font-medium">Rp {{ number_format($p['price'], 0, ',', '.') }}</p>
   </div>

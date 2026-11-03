@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -7,24 +8,22 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'home')->name('home');
 
 Route::get('/shop', function (Request $request) {
-    $products = collect(config('calmats.products'));
     $category = $request->string('category')->toString();
+    $query = Product::query()->where('is_active', true)->orderBy('sort_order')->orderBy('name');
 
     if ($category !== '') {
-        $products = $products->where('category', $category);
+        $query->where('category', $category);
     }
 
     return view('shop.index', [
-        'products' => $products->values(),
-        'categories' => collect(config('calmats.products'))->pluck('category')->unique()->values(),
+        'products' => $query->get(),
+        'categories' => Product::query()->where('is_active', true)->orderBy('category')->distinct()->pluck('category'),
         'activeCategory' => $category,
     ]);
 })->name('shop');
 
-Route::get('/shop/{slug}', function (string $slug) {
-    $product = collect(config('calmats.products'))->firstWhere('slug', $slug);
-
-    abort_unless($product, 404);
+Route::get('/shop/{product:slug}', function (Product $product) {
+    abort_unless($product->is_active, 404);
 
     return view('shop.show', compact('product'));
 })->name('shop.show');

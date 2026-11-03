@@ -13,7 +13,7 @@
 
         <dl class="mt-9 grid max-w-lg grid-cols-2 gap-5 border-y border-mist py-6 text-sm">
           <div><dt class="text-stone">Material</dt><dd class="mt-1">{{ $product['material'] }}</dd></div>
-          <div><dt class="text-stone">Ketersediaan</dt><dd class="mt-1">{{ $product['stock'] }}</dd></div>
+          <div><dt class="text-stone">Ketersediaan</dt><dd class="mt-1">{{ $product['stock_label'] }}</dd></div>
         </dl>
 
         <fieldset class="mt-9">
