@@ -6,7 +6,7 @@
         <div class="relative z-10 max-w-3xl">
             <p class="text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-[#d49a9d]">CALMATS / Admin control room</p>
             <h2 class="mt-5 font-serif text-4xl italic tracking-[-0.04em] sm:text-5xl">Selamat datang, {{ filament()->getUserName(filament()->auth()->user()) }}.</h2>
-            <p class="mt-5 max-w-xl text-sm font-medium leading-6 text-white/80">Kelola produk, stok, foto, dan status publikasi katalog dari dashboard ini.</p>
+            <p class="mt-5 max-w-xl text-sm font-medium leading-6 text-white/80">Kelola produk, stok, foto, publikasi katalog, dan kiriman Community dari dashboard ini.</p>
 
             <div class="mt-8 flex flex-wrap gap-3">
                 <a href="{{ \App\Filament\Resources\Products\ProductResource::getUrl('create') }}" class="inline-flex items-center gap-2 rounded-full bg-[#7b171c] px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#8f2228]">
@@ -14,6 +14,9 @@
                 </a>
                 <a href="{{ \App\Filament\Resources\Products\ProductResource::getUrl('index') }}" class="inline-flex items-center rounded-full border border-white/25 px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-[#191613]">
                     Kelola katalog
+                </a>
+                <a href="{{ \App\Filament\Resources\CommunityPosts\CommunityPostResource::getUrl('index') }}" class="inline-flex items-center rounded-full border border-white/25 px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-[#191613]">
+                    Moderasi Community
                 </a>
                 <a href="{{ route('home') }}" target="_blank" rel="noopener" class="inline-flex items-center rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white/80 transition hover:text-white">
                     Lihat website &nearr;

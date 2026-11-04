@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -29,11 +31,17 @@ class ProductForm
                     ->searchable()
                     ->required(),
                 TextInput::make('price')
-                    ->label('Harga')
+                    ->label('Harga jual')
                     ->required()
                     ->numeric()
                     ->minValue(0)
                     ->prefix('Rp'),
+                TextInput::make('compare_at_price')
+                    ->label('Harga normal sebelum promo')
+                    ->numeric()
+                    ->minValue(0)
+                    ->prefix('Rp')
+                    ->helperText('Kosongkan jika produk tidak sedang promo.'),
                 TextInput::make('stock_label')
                     ->label('Label stok')
                     ->required()
@@ -46,6 +54,41 @@ class ProductForm
                     ->label('Ukuran')
                     ->placeholder('Tambahkan ukuran')
                     ->required()
+                    ->columnSpanFull(),
+                Repeater::make('colors')
+                    ->label('Pilihan warna')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nama warna')
+                            ->required(),
+                        ColorPicker::make('hex')
+                            ->label('Warna')
+                            ->default('#191613')
+                            ->required(),
+                    ])
+                    ->columns(2)
+                    ->defaultItems(1)
+                    ->addActionLabel('Tambah warna')
+                    ->columnSpanFull(),
+                Repeater::make('variant_stock')
+                    ->label('Stok per varian')
+                    ->helperText('Isi nama warna dan ukuran persis seperti pilihan di atas. Jika kosong, sistem memakai jumlah stok umum.')
+                    ->schema([
+                        TextInput::make('color')
+                            ->label('Warna')
+                            ->required(),
+                        TextInput::make('size')
+                            ->label('Ukuran')
+                            ->required(),
+                        TextInput::make('stock')
+                            ->label('Stok')
+                            ->numeric()
+                            ->minValue(0)
+                            ->required(),
+                    ])
+                    ->columns(3)
+                    ->defaultItems(0)
+                    ->addActionLabel('Tambah stok varian')
                     ->columnSpanFull(),
                 Textarea::make('description')
                     ->label('Deskripsi')

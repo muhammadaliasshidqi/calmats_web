@@ -10,6 +10,8 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Enums\ColumnManagerLayout;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 
 class ProductsTable
@@ -69,7 +71,8 @@ class ProductsTable
                     ->options(fn (): array => \App\Models\Product::query()->orderBy('category')->distinct()->pluck('category', 'category')->all()),
                 TernaryFilter::make('is_active')->label('Produk aktif'),
                 TernaryFilter::make('is_featured')->label('Koleksi unggulan'),
-            ])
+            ], layout: FiltersLayout::Modal)
+            ->columnManagerLayout(ColumnManagerLayout::Modal)
             ->recordActions([
                 EditAction::make(),
             ])

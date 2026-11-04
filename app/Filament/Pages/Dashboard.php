@@ -22,7 +22,7 @@ class Dashboard extends BaseDashboard
     #[Unexposed]
     public function getSubheading(): string | Htmlable | null
     {
-        return 'Kelola katalog CALMATS dari satu tempat.';
+        return 'Kelola katalog dan moderasi Community CALMATS dari satu tempat.';
     }
 
     #[Unexposed]

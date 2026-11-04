@@ -6,18 +6,67 @@
   --color-paper: #f4f0ea;
   --color-ink: #191613;
   --color-mist: #e4ded6;
-  --color-stone: #746f68;
+  --color-stone: #5f5a54;
   --color-accent: #7b171c;
+  --text-xs: 1rem;
+  --text-xs--line-height: 1.5rem;
+  --text-sm: 1.0625rem;
+  --text-sm--line-height: 1.65rem;
 }
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { min-width: 320px; }
+  body { min-width: 320px; overflow-x: clip; font-size: 1.125rem; line-height: 1.65; }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
   input:not([type='checkbox']):not([type='radio']), select, textarea { border-radius: .875rem; }
   input[type='checkbox'], input[type='radio'] { border-radius: .3rem; }
   ::selection { background: var(--color-accent); color: var(--color-paper); }
   :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
   [x-cloak] { display: none !important; }
+}
+
+.premium-page :is(
+  [class~="text-[0.58rem]"],
+  [class~="text-[0.6rem]"],
+  [class~="text-[0.62rem]"]
+) {
+  font-size: .9375rem;
+  line-height: 1.4rem;
+}
+
+.premium-page :is(
+  [class~="text-[0.65rem]"],
+  [class~="text-[0.68rem]"],
+  [class~="text-[0.7rem]"]
+) {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.premium-page [class~="text-[10px]"] {
+  font-size: .875rem;
+  line-height: 1.25rem;
+}
+
+.premium-page .text-xs {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.premium-page .text-sm {
+  font-size: 1.0625rem;
+  line-height: 1.65rem;
+}
+
+.premium-page :is(.btn, .link-line, .nav-link, .eyebrow) {
+  font-size: .9375rem;
+  line-height: 1.4rem;
+  font-weight: 600;
+}
+
+.premium-page :is(input, select, textarea) {
+  font-size: 1rem;
 }
 
 @layer components {
@@ -26,7 +75,7 @@
   .btn-accent { @apply bg-accent text-paper hover:bg-ink; }
   .btn-line { @apply border border-ink text-ink hover:bg-ink hover:text-paper; }
   .link-line { @apply border-b border-ink pb-1 text-xs font-medium uppercase tracking-[0.18em] transition-colors hover:border-accent hover:text-accent; }
-  .nav-link { @apply text-[0.7rem] font-semibold uppercase tracking-[0.18em] transition-colors hover:text-accent; }
+  .nav-link { @apply rounded-full px-3 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] transition-all duration-300 hover:bg-accent/10 hover:text-accent; }
   .eyebrow { @apply text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-accent; }
 }
 
@@ -115,4 +164,16 @@
   .wordmark { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
+}
+
+@media (max-width: 639px) {
+  .premium-page .btn {
+    max-width: 100%;
+    padding-inline: 1.25rem;
+    font-size: .875rem;
+    line-height: 1.3rem;
+    letter-spacing: .12em;
+    white-space: normal;
+    text-align: center;
+  }
 }

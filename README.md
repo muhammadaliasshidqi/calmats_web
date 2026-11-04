@@ -2,7 +2,7 @@
 
 Landing page untuk **CALMATS**, brand fashion dengan estetika elegan, minimalist, dan streetwear yang membawa cerita di setiap produk.
 
-Tahap saat ini: **storefront dengan pengelolaan produk**. Homepage, katalog database, detail produk, halaman brand, community, cart browser, login Laravel, dan dashboard admin Filament sudah tersedia. Checkout belum dibuat.
+Tahap saat ini: **storefront dengan pengelolaan produk**. Homepage, katalog database, detail varian produk, halaman brand, community, cart tersinkron, login Laravel, dashboard admin Filament, serta pemesanan melalui WhatsApp sudah tersedia. Pembayaran dan ongkir otomatis belum dibuat.
 
 ## Teknologi
 
@@ -22,20 +22,23 @@ Database lokal tetap memakai SQLite agar mudah dijalankan. Untuk deployment, kon
 
 - Navbar (desktop + menu mobile, indikator cart, link Login)
 - Hero, Featured Collection, Brand Story, Editorial, Community, CTA, Footer
-- Halaman Shop dengan filter kategori dan halaman detail produk
+- Halaman Shop dengan search, filter kategori, sorting, load more, dan halaman detail produk
+- Detail produk dengan pilihan warna/ukuran, stok per varian, serta harga promo
 - Halaman About dan Community
-- Cart persisten di browser (localStorage), termasuk jumlah item dan subtotal
-- Login/logout menggunakan autentikasi Laravel
+- Community Feed dengan upload foto/caption, preview, status moderasi, dan publikasi kiriman yang disetujui
+- Cart guest di browser dan sinkronisasi SQLite untuk pengguna login, termasuk foto, varian, quantity, subtotal, serta konfirmasi hapus
+- Ringkasan pesanan dan handoff WhatsApp dengan fallback salin pesan
+- Login, registrasi, lupa/reset password, logout, halaman profil, serta login admin khusus menggunakan autentikasi Laravel
 - Model, migration, dan factory Produk
 - Dashboard admin Filament untuk CRUD produk dan upload foto
-- Tampilan responsif (desktop, tablet, smartphone)
+- Moderasi kiriman Community dari dashboard admin (menunggu, disetujui, atau ditolak)
+- Tampilan responsif yang sudah diaudit untuk desktop, tablet, smartphone, navigasi, formulir, katalog, cart, autentikasi, dan dashboard admin
 - Fallback otomatis: kalau foto belum ada, tampil kotak abu-abu berlabel "placeholder"
 
 ## Yang belum jadi
 
 - Katalog produk sengaja masih kosong sampai data dan foto resmi CALMATS tersedia.
-- Cart masih tersimpan di browser; belum tersinkron ke akun atau backend.
-- Checkout, pembayaran, ongkir, pendaftaran akun publik, dan lupa kata sandi belum dibuat.
+- Pembayaran, ongkir otomatis, dan riwayat pesanan belum dibuat.
 - URL WhatsApp dan Instagram resmi perlu diisi lewat `.env`.
 - Foto asli (hero, story, editorial, komunitas, dan produk) belum ada.
 
@@ -105,9 +108,10 @@ Buat akun melalui perintah interaktif berikut:
 
 ```bash
 php artisan make:filament-user
+php artisan calmats:admin email-admin@example.com
 ```
 
-Isi nama, email, dan password milik pengelola. Setelah selesai, buka **http://127.0.0.1:8000/admin**. Pendaftaran akun publik sengaja belum diaktifkan, sehingga hanya akun yang dibuat pengelola yang dapat masuk.
+Isi nama, email, dan password milik pengelola, lalu jalankan perintah kedua menggunakan email yang sama untuk memberikan akses admin. Setelah selesai, buka halaman login khusus admin di **http://127.0.0.1:8000/admin/login**. Akun pelanggan biasa tidak dapat mengakses dashboard admin.
 
 Jika ingin mengunggah foto produk, pastikan link storage sudah dibuat:
 
@@ -126,7 +130,7 @@ resources/views/shop/                       -> katalog dan detail produk
 resources/views/about.blade.php             -> cerita dan prinsip brand
 resources/views/community.blade.php         -> halaman komunitas
 resources/views/cart.blade.php              -> keranjang berbasis browser
-resources/views/auth/login.blade.php        -> login Laravel
+resources/views/auth/                       -> login, register, reset password, dan profil
 app/Models/Product.php                     -> model katalog produk
 database/migrations/*create_products*      -> struktur tabel produk
 app/Filament/Resources/Products/           -> CRUD produk dashboard admin
@@ -191,8 +195,8 @@ Setelah koneksi tersedia, jalankan `php artisan migrate`. Jangan menyimpan passw
 1. Masukkan data produk resmi melalui dashboard admin
 2. Tambahkan foto asli CALMATS melalui dashboard admin
 3. Siapkan server PostgreSQL untuk deployment
-4. Sinkronisasi cart ke akun dan proses checkout
-5. Registrasi akun, lupa kata sandi, serta riwayat pesanan
+4. Tambahkan pembayaran dan perhitungan ongkir otomatis jika dibutuhkan
+5. Tambahkan riwayat dan status pesanan pelanggan
 
 ## Cara kerja sama lewat Git
 

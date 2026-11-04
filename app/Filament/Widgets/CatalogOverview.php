@@ -2,7 +2,9 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\CommunityPosts\CommunityPostResource;
 use App\Filament\Resources\Products\ProductResource;
+use App\Models\CommunityPost;
 use App\Models\Product;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -38,6 +40,11 @@ class CatalogOverview extends StatsOverviewWidget
                 ->icon('heroicon-o-star')
                 ->color('warning')
                 ->url(ProductResource::getUrl('index')),
+            Stat::make('Menunggu moderasi', CommunityPost::query()->where('status', 'pending')->count())
+                ->description('Kiriman Community baru')
+                ->icon('heroicon-o-photo')
+                ->color('warning')
+                ->url(CommunityPostResource::getUrl('index')),
         ];
     }
 }

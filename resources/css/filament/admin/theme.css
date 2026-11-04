@@ -19,6 +19,7 @@
     color: var(--calmats-ink);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-size: 1rem;
 }
 
 .fi-body {
@@ -46,7 +47,14 @@
 }
 
 .fi-ta-ctn {
-    overflow: hidden;
+    overflow: visible;
+}
+
+.fi-ta-content {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-gutter: stable;
+    touch-action: pan-x;
 }
 
 .fi-wi-stats-overview-stat {
@@ -68,6 +76,8 @@
 .fi-panel-admin .fi-wi-stats-overview-stat-description {
     color: #514a44;
     font-weight: 500;
+    font-size: .95rem;
+    line-height: 1.5rem;
 }
 
 .fi-panel-admin .fi-sidebar-item-label,
@@ -81,6 +91,7 @@
 .fi-panel-admin .fi-ta-header-cell-label,
 .fi-panel-admin .fi-sidebar-item-label {
     font-weight: 600;
+    font-size: .925rem;
 }
 
 .fi-panel-admin .fi-input,
@@ -88,11 +99,31 @@
 .fi-panel-admin .fi-ta-text-item-label {
     color: #28231f;
     font-weight: 500;
+    font-size: .95rem;
 }
 
 .fi-panel-admin .fi-input::placeholder {
     color: #716860;
     opacity: 1;
+}
+
+.fi-panel-admin .fi-btn-label,
+.fi-panel-admin .fi-wi-stats-overview-stat-label,
+.fi-panel-admin .fi-wi-stats-overview-stat-description {
+    font-size: .9rem;
+}
+
+.fi-panel-admin [class~="text-xs"] {
+    font-size: .875rem;
+    line-height: 1.35rem;
+}
+
+.fi-simple-layout .fi-fo-field-wrp-label,
+.fi-simple-layout .fi-input,
+.fi-simple-layout .fi-btn-label,
+.fi-simple-layout .fi-simple-header-subheading {
+    font-size: .95rem;
+    line-height: 1.5rem;
 }
 
 .fi-sidebar-nav-groups {
@@ -208,5 +239,18 @@
     .fi-simple-main {
         margin-inline: 1rem;
         padding: 2rem;
+    }
+}
+
+@media (max-width: 30rem) {
+    .fi-simple-main {
+        margin-inline: .75rem;
+        padding: 1.5rem;
+        border-radius: 1.35rem;
+    }
+
+    .fi-simple-header-heading {
+        font-size: 1.85rem;
+        line-height: 2.15rem;
     }
 }
