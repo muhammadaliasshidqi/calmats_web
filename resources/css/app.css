@@ -81,8 +81,6 @@
 
 .premium-page {
   background-color: var(--color-paper);
-  background-image: radial-gradient(rgba(25, 22, 19, .035) .65px, transparent .65px);
-  background-size: 5px 5px;
 }
 
 .hero-editorial {
@@ -92,15 +90,7 @@
 
 .product-media {
   overflow: hidden;
-  border-radius: 1.5rem;
-  background: #eee9e2;
-  box-shadow: 0 13px 30px rgba(40, 31, 25, .12), 0 2px 5px rgba(40, 31, 25, .07);
-  transition: box-shadow .4s ease, transform .4s ease;
-}
-
-.group:hover .product-media {
-  box-shadow: 0 19px 38px rgba(40, 31, 25, .16), 0 3px 8px rgba(40, 31, 25, .08);
-  transform: translateY(-3px);
+  background: transparent;
 }
 
 .community-media {

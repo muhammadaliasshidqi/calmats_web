@@ -1,29 +1,8 @@
 <x-layouts.app title="Community — CALMATS">
-  <section class="mx-auto max-w-[1440px] px-5 pb-20 pt-10 lg:px-12 lg:pb-28 lg:pt-16">
-    <div class="grid overflow-hidden border-b border-ink/15 lg:min-h-[580px] lg:grid-cols-12">
-      <div class="flex flex-col justify-center py-16 lg:col-span-7 lg:py-24 lg:pr-16">
-        <p class="eyebrow">CALMATS Community / 01</p>
-        <h1 class="mt-7 font-serif text-6xl leading-[0.9] tracking-[-0.045em] sm:text-8xl lg:text-[7rem]">Different pace.<br><em>Same energy.</em></h1>
-        <p class="mt-8 max-w-xl text-base leading-7 text-stone">Ruang untuk orang-orang yang memilih bergerak dengan caranya sendiri—berbagi gaya, proses, dan cerita tanpa perlu menjadi paling bising.</p>
-        <div class="mt-12 flex items-center gap-4 text-[0.62rem] font-semibold uppercase tracking-[0.25em] text-stone">
-          <span class="h-px w-12 bg-accent"></span>
-          People, culture & movement
-        </div>
-      </div>
-
-      <div class="community-forest-panel relative min-h-[340px] overflow-hidden text-paper lg:col-span-5 lg:min-h-[580px]">
-        <p class="absolute left-8 top-8 text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-paper/70">CALMATS / Collective</p>
-        <p class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-serif text-7xl italic tracking-[-0.05em] text-paper/15 sm:text-9xl">PEOPLE</p>
-        <p class="absolute bottom-8 right-8 max-w-[12rem] text-right text-[0.62rem] uppercase leading-5 tracking-[0.2em] text-paper/70">Every look carries a different story.</p>
-      </div>
-    </div>
-
-    <section id="feed" class="mt-16 md:mt-20">
-      <div class="flex flex-wrap items-end justify-between gap-5 border-b border-ink/15 pb-7">
-        <div>
-          <p class="eyebrow">Community feed</p>
-          <h2 class="mt-3 font-serif text-4xl italic sm:text-5xl">Stories from the collective.</h2>
-        </div>
+  <section class="mx-auto max-w-[1440px] px-5 pb-20 pt-8 lg:px-12 lg:pb-24">
+    <section id="feed">
+      <div class="flex flex-wrap items-end justify-between gap-5 border-b border-ink/15 pb-5">
+        <h1 class="font-serif text-3xl sm:text-4xl">Community</h1>
         @if ($communityPosts->isNotEmpty())
           <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone">{{ $communityPosts->count() }} cerita terpilih</p>
         @endif
@@ -33,85 +12,67 @@
         @php
           $tones = ['community-tone-clay', 'community-tone-sage', 'community-tone-wine'];
         @endphp
-        <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="mt-5 grid gap-2 sm:grid-cols-3 sm:gap-3">
           @foreach ($communityPosts as $post)
-            <article class="community-gallery-card {{ $tones[$loop->index % count($tones)] }}">
-              <div class="flex items-center justify-between gap-4 px-5 py-4 text-xs font-semibold uppercase tracking-[0.16em]">
-                <span>{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }} / Community</span>
-                <span>{{ $post->user->name }}</span>
+            <article>
+              <div class="aspect-[4/5] overflow-hidden bg-mist">
+                <img src="{{ asset('storage/'.$post->image) }}" alt="Kiriman komunitas oleh {{ $post->user->name }}" width="800" height="1000" class="h-full w-full object-cover" loading="lazy">
               </div>
-              <img src="{{ asset('storage/'.$post->image) }}" alt="Kiriman komunitas oleh {{ $post->user->name }}" class="aspect-[4/5] w-full object-cover" loading="lazy">
-              <div class="px-5 py-5">
-                <p class="leading-7">{{ $post->caption }}</p>
-                <p class="mt-4 text-xs font-semibold uppercase tracking-[0.16em] opacity-65">{{ $post->published_at?->translatedFormat('d M Y') }}</p>
-              </div>
+              <p class="mt-3 text-sm leading-6">{{ $post->caption }}</p>
+              <p class="mt-1 text-xs text-stone">{{ $post->user->name }} · {{ $post->published_at?->translatedFormat('d M Y') }}</p>
             </article>
           @endforeach
         </div>
       @else
-        <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-12 md:items-end md:gap-6">
-          <article class="community-gallery-card community-tone-clay col-span-2 md:col-span-5">
-            <div class="flex items-center justify-between px-4 py-3 text-xs font-semibold uppercase tracking-[0.16em]">
-              <span>01 / Everyday</span><span>CALMATS</span>
+        <div class="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+          @foreach ([1, 2, 3] as $number)
+            <div class="aspect-[4/5] overflow-hidden bg-mist">
+              <x-img class="h-full w-full !rounded-none !bg-transparent" src="{{ $number === 1 ? 'images/calmats/preview-community.png' : null }}" alt="Foto komunitas CALMATS" label="Foto komunitas belum tersedia" />
             </div>
-            <x-img class="aspect-[4/5] !bg-transparent" src="images/calmats/preview-community.png" alt="Tiga anggota komunitas CALMATS berbincang di ruang terbuka" label="Momen komunitas belum tersedia" />
-          </article>
-          <article class="community-gallery-card community-tone-sage md:col-span-3 md:translate-y-10">
-            <div class="flex items-center justify-between px-4 py-3 text-xs font-semibold uppercase tracking-[0.16em]">
-              <span>02</span><span>Culture</span>
-            </div>
-            <x-img class="aspect-square !bg-transparent" label="Momen komunitas belum tersedia" />
-          </article>
-          <article class="community-gallery-card community-tone-wine md:col-span-4">
-            <div class="flex items-center justify-between px-4 py-3 text-xs font-semibold uppercase tracking-[0.16em]">
-              <span>03 / Motion</span><span>Collective</span>
-            </div>
-            <x-img class="aspect-[3/4] !bg-transparent" label="Momen komunitas belum tersedia" />
-          </article>
+          @endforeach
         </div>
+        <p class="mt-4 text-center text-sm text-stone">Share your Calmats moment</p>
       @endif
     </section>
 
-    <section id="share" class="community-invite mt-20 grid gap-10 px-6 py-10 text-paper sm:mt-24 sm:px-10 sm:py-12 lg:grid-cols-2 lg:px-14 lg:py-16">
+    <section id="share" class="mt-8 border-t border-ink/15 pt-8">
       <div>
-        <p class="text-[0.62rem] font-semibold uppercase tracking-[0.25em] text-paper/60">Your pace, your story</p>
-        <h2 class="mt-5 font-serif text-5xl italic tracking-[-0.035em] sm:text-6xl">Wear it your way.</h2>
-        <p class="mt-6 max-w-lg leading-7 text-paper/70">Bagikan interpretasi, keseharian, atau proses kreatifmu bersama CALMATS. Setiap kiriman akan diperiksa admin sebelum tampil di feed.</p>
+        <h2 class="font-serif text-2xl">Share your Calmats moment</h2>
+        <p class="mt-2 max-w-lg text-sm leading-6 text-stone">Bagikan interpretasi, keseharian, atau proses kreatifmu bersama CALMATS. Setiap kiriman akan diperiksa admin sebelum tampil di feed.</p>
       </div>
-      <div class="lg:self-end">
+      <div class="mt-5 max-w-2xl">
         @auth
           <form method="POST" action="{{ route('community.store') }}" enctype="multipart/form-data" class="space-y-5" x-data="{ preview: null, fileName: '' }">
             @csrf
             <div>
-              <label for="community-image" class="text-xs font-semibold uppercase tracking-[0.16em] text-paper/75">Foto</label>
-              <label for="community-image" class="mt-2 flex min-h-44 cursor-pointer items-center justify-center overflow-hidden rounded-[1.35rem] border border-dashed border-paper/35 bg-paper/10 text-center transition hover:border-paper/70 hover:bg-paper/15">
+              <label for="community-image" class="text-sm font-medium">Foto</label>
+              <label for="community-image" class="mt-2 flex min-h-44 cursor-pointer items-center justify-center overflow-hidden border border-ink/20 text-center transition hover:border-ink">
                 <img x-show="preview" x-cloak :src="preview" alt="Preview foto komunitas" class="h-64 w-full object-cover">
                 <span x-show="!preview" class="px-6 py-10">
-                  <span class="block font-serif text-2xl italic">Pilih foto</span>
-                  <span class="mt-2 block text-sm text-paper/60">JPG, PNG, atau WebP · maksimal 5 MB</span>
+                  <span class="block text-lg font-medium">Pilih foto</span>
+                  <span class="mt-2 block text-sm text-stone">JPG, PNG, atau WebP · maksimal 5 MB</span>
                 </span>
               </label>
               <input id="community-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" required class="sr-only" x-on:change="const file = $event.target.files[0]; if (preview) URL.revokeObjectURL(preview); preview = file ? URL.createObjectURL(file) : null; fileName = file?.name ?? ''">
-              <p x-show="fileName" x-cloak x-text="fileName" class="mt-2 break-all text-sm text-paper/60"></p>
+              <p x-show="fileName" x-cloak x-text="fileName" class="mt-2 break-all text-sm text-stone"></p>
               @error('image')<p class="mt-2 text-sm text-red-200" role="alert">{{ $message }}</p>@enderror
             </div>
 
             <div x-data="{ caption: @js(old('caption', '')) }">
               <div class="flex items-center justify-between gap-4">
-                <label for="community-caption" class="text-xs font-semibold uppercase tracking-[0.16em] text-paper/75">Caption</label>
-                <span class="text-xs text-paper/45"><span x-text="caption.length"></span>/500</span>
+                <label for="community-caption" class="text-sm font-medium">Caption</label>
+                <span class="text-xs text-stone"><span x-text="caption.length"></span>/500</span>
               </div>
-              <textarea id="community-caption" name="caption" x-model="caption" maxlength="500" rows="5" required placeholder="Ceritakan momen, gaya, atau proses kreatifmu..." class="mt-2 w-full border border-paper/25 bg-paper/10 px-4 py-3 text-paper placeholder:text-paper/40 focus:border-paper/70">{{ old('caption') }}</textarea>
+              <textarea id="community-caption" name="caption" x-model="caption" maxlength="500" rows="5" required placeholder="Ceritakan momen, gaya, atau proses kreatifmu..." class="mt-2 w-full border border-ink/20 bg-transparent px-4 py-3 text-ink placeholder:text-stone focus:border-ink">{{ old('caption') }}</textarea>
               @error('caption')<p class="mt-2 text-sm text-red-200" role="alert">{{ $message }}</p>@enderror
             </div>
 
-            <button type="submit" class="btn w-full bg-paper text-ink hover:bg-accent hover:text-paper">Kirim untuk ditinjau</button>
+            <button type="submit" class="min-h-11 bg-ink px-6 py-3 text-sm font-semibold text-paper hover:bg-accent">Upload your photo wearing Calmats</button>
           </form>
         @else
-          <div class="rounded-[1.35rem] border border-paper/20 bg-paper/10 p-6">
-            <p class="font-serif text-3xl italic">Masuk untuk berbagi.</p>
-            <p class="mt-3 leading-7 text-paper/65">Login terlebih dahulu agar kiriman tersimpan di akunmu dan status moderasinya dapat dilihat.</p>
-            <a href="{{ route('login') }}" class="btn mt-7 bg-paper text-ink hover:bg-accent hover:text-paper">Login</a>
+          <div>
+            <p class="text-sm text-stone">Masuk untuk mengirim foto. Kiriman akan ditinjau sebelum tampil di feed.</p>
+            <a href="{{ route('login') }}" class="mt-4 inline-flex min-h-11 items-center bg-ink px-6 py-3 text-sm font-semibold text-paper hover:bg-accent">Login</a>
           </div>
         @endauth
       </div>
