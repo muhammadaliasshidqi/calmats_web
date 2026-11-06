@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="premium-page bg-paper font-sans text-ink antialiased">
+<body class="bg-paper font-sans text-base leading-relaxed text-ink antialiased">
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:bg-ink focus:px-4 focus:py-2 focus:text-paper">Lewati ke konten</a>
   <x-navbar />
   @if (session('status'))
