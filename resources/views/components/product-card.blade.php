@@ -13,6 +13,9 @@
   <a href="{{ route('shop.show', $p['slug']) }}" class="block" aria-label="Lihat detail {{ $p['name'] }}">
     <div class="product-media relative">
       <x-img class="aspect-[4/3] transition-transform duration-700 group-hover:scale-[1.015]" :src="$p['image'] ?? null" :alt="$p['name']" label="Foto produk belum tersedia" />
+      @if (!empty($p['compare_at_price']) && $p['compare_at_price'] > $p['price'])
+        <span class="absolute left-4 top-4 rounded-full bg-accent px-3 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-paper">Promo</span>
+      @endif
     </div>
   </a>
   <div class="mt-5 flex items-start justify-between gap-4">

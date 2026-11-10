@@ -27,6 +27,12 @@
       this.selected = value;
       this.open = false;
       this.$nextTick(() => this.$refs.trigger.focus());
+    },
+    moveFocus(event, direction) {
+      const options = [...this.$refs.options.querySelectorAll('[role=option]')];
+      const current = options.indexOf(event.currentTarget);
+      const next = Math.min(options.length - 1, Math.max(0, current + direction));
+      options[next]?.focus();
     }
   }"
   x-on:click.outside="open = false"
@@ -41,12 +47,14 @@
     x-on:click="toggle()"
     :aria-expanded="open"
     aria-haspopup="listbox"
+    aria-controls="{{ $name }}-options"
   >
     <span x-text="selectedLabel"></span>
     <svg class="h-4 w-4 shrink-0 text-accent transition-transform duration-200" :class="open && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
   </button>
 
   <div
+    id="{{ $name }}-options"
     x-ref="options"
     x-show="open"
     x-cloak
@@ -65,8 +73,8 @@
         role="option"
         :aria-selected="selected === item.value"
         x-on:click="choose(item.value)"
-        x-on:keydown.arrow-down.prevent="$event.currentTarget.nextElementSibling?.focus()"
-        x-on:keydown.arrow-up.prevent="$event.currentTarget.previousElementSibling?.focus()"
+        x-on:keydown.arrow-down.prevent="moveFocus($event, 1)"
+        x-on:keydown.arrow-up.prevent="moveFocus($event, -1)"
         class="flex w-full items-center justify-between gap-4 rounded-[1rem] px-4 py-3 text-left text-base font-medium transition"
         :class="selected === item.value ? 'bg-accent text-paper' : 'text-ink hover:bg-mist/65'"
       >

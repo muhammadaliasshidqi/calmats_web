@@ -62,7 +62,7 @@
       </div>
 
       <aside class="h-fit rounded-[1.75rem] bg-ink p-6 text-paper shadow-[0_20px_55px_rgba(25,22,19,.2)] sm:p-8">
-        <p class="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-paper/50">Order review</p>
+        <p class="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-paper/80">Order review</p>
         <h2 class="mt-4 font-serif text-4xl italic">Ringkasan</h2>
         <dl class="mt-8 space-y-5 text-sm">
           <div class="flex justify-between gap-5"><dt class="text-paper/60">Subtotal</dt><dd x-text="format($store.cart.total)"></dd></div>
@@ -71,32 +71,32 @@
         </dl>
         <form class="mt-8 border-t border-paper/20 pt-7" x-on:submit.prevent="handoff">
           <p class="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-paper/60">Data pemesan</p>
-          <div class="mt-5 space-y-3">
+          <div class="mt-5 space-y-4">
             <label class="block">
-              <span class="sr-only">Nama lengkap</span>
-              <input x-model.trim="customer.name" required type="text" autocomplete="name" placeholder="Nama lengkap" class="w-full border border-paper/20 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/45 focus:border-paper/60">
+              <span class="mb-1 block text-sm text-paper/90">Nama lengkap</span>
+              <input x-model.trim="customer.name" required type="text" autocomplete="name" placeholder="Nama lengkap" class="w-full border border-paper/30 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/75 focus:border-paper/80">
             </label>
             <label class="block">
-              <span class="sr-only">Nomor WhatsApp</span>
-              <input x-model.trim="customer.phone" required type="tel" autocomplete="tel" placeholder="Nomor WhatsApp" class="w-full border border-paper/20 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/45 focus:border-paper/60">
+              <span class="mb-1 block text-sm text-paper/90">Nomor WhatsApp</span>
+              <input x-model.trim="customer.phone" required type="tel" autocomplete="tel" placeholder="Nomor WhatsApp" class="w-full border border-paper/30 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/75 focus:border-paper/80">
             </label>
             <label class="block">
-              <span class="sr-only">Alamat pengiriman</span>
-              <textarea x-model.trim="customer.address" required rows="3" autocomplete="street-address" placeholder="Alamat lengkap pengiriman" class="w-full border border-paper/20 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/45 focus:border-paper/60"></textarea>
+              <span class="mb-1 block text-sm text-paper/90">Alamat pengiriman</span>
+              <textarea x-model.trim="customer.address" required rows="3" autocomplete="street-address" placeholder="Alamat lengkap pengiriman" class="w-full border border-paper/30 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/75 focus:border-paper/80"></textarea>
             </label>
             <label class="block">
-              <span class="sr-only">Catatan pesanan</span>
-              <textarea x-model.trim="customer.note" rows="2" placeholder="Catatan tambahan (opsional)" class="w-full border border-paper/20 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/45 focus:border-paper/60"></textarea>
+              <span class="mb-1 block text-sm text-paper/90">Catatan pesanan (opsional)</span>
+              <textarea x-model.trim="customer.note" rows="2" placeholder="Catatan tambahan (opsional)" class="w-full border border-paper/30 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/75 focus:border-paper/80"></textarea>
             </label>
           </div>
 
           <button type="submit" class="btn btn-accent mt-5 w-full">
             {{ config('calmats.whatsapp_url') ? 'Pesan via WhatsApp' : 'Salin ringkasan pesanan' }}
           </button>
-          <p class="mt-4 text-xs leading-5 text-paper/55">Pesanan belum dikirim otomatis. Kamu tetap dapat memeriksa isi pesan sebelum mengirimkannya.</p>
+          <p class="mt-4 text-xs leading-5 text-paper/80">Pesanan belum dikirim otomatis. Kamu tetap dapat memeriksa isi pesan sebelum mengirimkannya.</p>
           <p x-show="handoffNotice" x-cloak x-text="handoffNotice" class="mt-4 rounded-xl bg-paper/10 px-4 py-3 text-xs leading-5 text-paper" role="status"></p>
         </form>
-        <button type="button" x-on:click="if (confirm('Kosongkan seluruh isi keranjang?')) $store.cart.clear()" class="mt-7 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-paper/50 underline underline-offset-4 transition-colors hover:text-paper">Kosongkan keranjang</button>
+        <button type="button" x-on:click="if (confirm('Kosongkan seluruh isi keranjang?')) $store.cart.clear()" class="mt-7 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-paper/80 underline underline-offset-4 transition-colors hover:text-paper">Kosongkan keranjang</button>
       </aside>
     </div>
   </section>
