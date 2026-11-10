@@ -4,6 +4,7 @@
   heading="Lupa sandi?"
   description="Masukkan email akunmu. Kami akan mengirimkan tautan untuk membuat kata sandi baru."
   quote="Take a breath. Your account is still within reach."
+  :simple="true"
 >
   @if (session('status'))
     <div class="mt-8 rounded-[1.25rem] border border-green-800/15 bg-green-800/10 px-5 py-4 text-sm text-green-900" role="status">{{ session('status') }}</div>

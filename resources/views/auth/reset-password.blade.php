@@ -4,6 +4,7 @@
   heading="Sandi baru"
   description="Buat kata sandi baru yang kuat agar akunmu tetap aman."
   quote="A fresh start, with everything important still close."
+  :simple="true"
 >
   <form method="POST" action="{{ route('password.update') }}" class="mt-9 space-y-5">
     @csrf
