@@ -14,9 +14,7 @@
     'flex max-w-4xl items-center justify-center overflow-hidden' => $simple,
   ])>
     @unless ($simple)
-      <div class="relative hidden overflow-hidden rounded-[1.75rem] bg-ink shadow-[0_24px_65px_rgba(25,22,19,.18)] lg:block lg:rounded-r-none">
-        <x-img class="h-full w-full !rounded-none" src="images/calmats/collection-01/community-stairs.jpg" alt="Editorial komunitas CALMATS" img-class="object-[center_45%]" label="Foto editorial CALMATS belum tersedia" />
-      </div>
+      <div class="hidden rounded-[1.75rem] bg-[#191513] shadow-[0_24px_65px_rgba(25,22,19,.18)] lg:block lg:rounded-r-none" aria-hidden="true"></div>
     @endunless
 
     <div @class([

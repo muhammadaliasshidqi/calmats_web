@@ -1,11 +1,11 @@
 <x-layouts.app title="Shop — CALMATS">
   <section class="mx-auto max-w-[1440px] px-5 pb-24 pt-10 lg:px-12 lg:pt-16">
-    <div class="relative overflow-hidden rounded-[2rem] border border-ink/10 bg-gradient-to-br from-[#fffaf7] via-[#f3e8e2] to-[#e4cbc1] px-7 shadow-[0_24px_70px_rgba(64,35,28,.09)] sm:px-12 lg:px-16">
+    <div class="relative overflow-hidden rounded-[2rem] border border-paper/10 bg-[#191513] px-7 text-paper shadow-[0_24px_70px_rgba(35,25,22,.16)] sm:px-12 lg:px-16">
       <div class="relative z-10 flex min-h-[460px] max-w-5xl flex-col justify-center py-14 lg:py-20">
-        <p class="eyebrow">Collection 01</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#d8a2a5]">Collection 01</p>
         <h1 class="mt-7 max-w-4xl font-serif text-6xl leading-[0.92] tracking-[-0.045em] sm:text-7xl lg:text-[6.5rem]">Made for the quiet<br class="hidden sm:block"> movement.</h1>
-        <p class="mt-8 max-w-xl text-base leading-7 text-stone">Katalog CALMATS—potongan sederhana, material berkarakter, dan ruang untuk menjadi diri sendiri.</p>
-        <p class="mt-12 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-stone">Designed in Indonesia <span class="mx-2 text-accent">/</span> Built for everyday movement</p>
+        <p class="mt-8 max-w-xl text-base leading-7 text-paper/65">Katalog CALMATS—potongan sederhana, material berkarakter, dan ruang untuk menjadi diri sendiri.</p>
+        <p class="mt-12 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-paper/50">Designed in Indonesia <span class="mx-2 text-[#d8a2a5]">/</span> Built for everyday movement</p>
       </div>
 
     </div>
