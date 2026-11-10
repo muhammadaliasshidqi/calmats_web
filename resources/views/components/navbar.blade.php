@@ -3,7 +3,10 @@
 @endphp
 <header x-data="{ open: false }" x-on:keydown.escape.window="open = false" class="sticky top-0 z-50 border-b border-ink/10 bg-paper/90 backdrop-blur-md">
   <nav class="mx-auto grid h-[72px] max-w-[1440px] grid-cols-2 items-center px-5 lg:grid-cols-3 lg:px-12" aria-label="Navigasi utama">
-    <a href="{{ route('home') }}" class="w-fit font-serif text-2xl tracking-[-0.03em] transition-colors duration-300 hover:text-accent sm:text-[1.75rem]" aria-label="CALMATS, ke Home">CALMATS</a>
+    <a href="{{ route('home') }}" class="flex w-fit items-center gap-3 transition-colors duration-300 hover:text-accent" aria-label="CALMATS, ke Home">
+      <img src="{{ asset('images/Logo.png') }}" alt="" class="h-11 w-11 object-contain" width="44" height="44">
+      <span class="font-serif text-2xl tracking-[-0.03em] sm:text-[1.75rem]">CALMATS</span>
+    </a>
 
     <ul class="hidden items-center justify-center gap-4 lg:flex xl:gap-8">
       @foreach ($links as $label => $name)

@@ -8,9 +8,13 @@
         <a href="{{ route('community') }}" class="link-line mt-8 inline-block">Explore community</a>
       </div>
       <div class="reveal grid grid-cols-3 gap-2 sm:gap-4 lg:col-span-8">
-        @foreach (['aspect-[3/4]', 'aspect-[3/4]', 'aspect-[3/4]'] as $i => $ratio)
+        @foreach ([
+          ['images/calmats/collection-01/community-work-01.jpg', 'Proses kreatif komunitas CALMATS'],
+          ['images/calmats/collection-01/night-ride.jpg', 'CALMATS dalam perjalanan malam kota'],
+          ['images/calmats/collection-01/community-stairs.jpg', 'Gaya CALMATS di ruang urban'],
+        ] as $i => [$image, $alt])
           <div class="community-media {{ $i === 1 ? 'lg:-translate-y-5' : '' }}">
-            <x-img class="{{ $ratio }}" label="Foto komunitas {{ $i + 1 }} belum tersedia" />
+            <x-img class="aspect-[3/4]" :src="$image" :alt="$alt" label="Foto komunitas {{ $i + 1 }} belum tersedia" />
           </div>
         @endforeach
       </div>

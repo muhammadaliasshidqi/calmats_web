@@ -4,6 +4,7 @@
   heading="Buat akun"
   description="Simpan pilihanmu dan lanjutkan pengalaman CALMATS dari perangkat mana pun."
   quote="A personal space for quiet choices and considered movement."
+  :simple="true"
 >
   <form method="POST" action="{{ route('register.store') }}" class="mt-9 space-y-5">
     @csrf

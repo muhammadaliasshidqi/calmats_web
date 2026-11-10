@@ -68,9 +68,14 @@ class ProductsTable
             ->filters([
                 SelectFilter::make('category')
                     ->label('Kategori')
+                    ->native(false)
                     ->options(fn (): array => \App\Models\Product::query()->orderBy('category')->distinct()->pluck('category', 'category')->all()),
-                TernaryFilter::make('is_active')->label('Produk aktif'),
-                TernaryFilter::make('is_featured')->label('Koleksi unggulan'),
+                TernaryFilter::make('is_active')
+                    ->label('Produk aktif')
+                    ->native(false),
+                TernaryFilter::make('is_featured')
+                    ->label('Koleksi unggulan')
+                    ->native(false),
             ], layout: FiltersLayout::Modal)
             ->columnManagerLayout(ColumnManagerLayout::Modal)
             ->recordActions([

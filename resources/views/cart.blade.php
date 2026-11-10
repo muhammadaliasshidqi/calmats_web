@@ -28,9 +28,7 @@
           </div>
         </div>
         <div class="relative min-h-[360px] md:col-span-5">
-          <x-img class="h-full w-full !rounded-none !bg-transparent" src="images/calmats/preview-shop.png" alt="Editorial CALMATS untuk halaman keranjang" label="Foto editorial belum tersedia" />
-          <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#4a1014]/55 via-transparent to-black/10"></div>
-          <p class="pointer-events-none absolute bottom-8 right-8 font-serif text-5xl italic text-paper/80">Quiet choices.</p>
+          <x-img class="h-full w-full !rounded-none !bg-transparent" src="images/calmats/collection-01/oversized-tee-front.jpg" alt="Kaus oversized CALMATS tampak depan" label="Foto editorial belum tersedia" />
         </div>
       </div>
     </div>

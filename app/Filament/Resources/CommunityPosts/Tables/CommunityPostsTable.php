@@ -56,6 +56,7 @@ class CommunityPostsTable
             ->filters([
                 SelectFilter::make('status')
                     ->label('Status')
+                    ->native(false)
                     ->options([
                         'pending' => 'Menunggu moderasi',
                         'approved' => 'Disetujui',

@@ -26,9 +26,6 @@
     <div class="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-20">
       <div class="relative">
         <x-img class="aspect-[3/4]" :src="$product->image" :alt="$product->name" label="Foto produk belum tersedia" />
-        @if ($isPromo)
-          <span class="absolute left-5 top-5 rounded-full bg-accent px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-paper">Save {{ $discount }}%</span>
-        @endif
       </div>
 
       <div

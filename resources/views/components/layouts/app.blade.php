@@ -1,3 +1,4 @@
+@props(['showNavbar' => true, 'showFooter' => true])
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,6 +8,7 @@
   <meta name="calmats-authenticated" content="{{ auth()->check() ? '1' : '0' }}">
   <title>{{ $title ?? 'CALMATS — Tenang itu sikap' }}</title>
   <meta name="description" content="CALMATS adalah brand fashion minimalis dengan karakter streetwear dan cerita di setiap produk.">
+  <link rel="icon" type="image/png" href="{{ asset('images/Logo.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
@@ -14,11 +16,15 @@
 </head>
 <body class="premium-page bg-paper font-sans text-ink antialiased">
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:bg-ink focus:px-4 focus:py-2 focus:text-paper">Lewati ke konten</a>
-  <x-navbar />
+  @if ($showNavbar && ! request()->routeIs('login'))
+    <x-navbar />
+  @endif
   @if (session('status'))
     <div class="border-b border-mist bg-white px-5 py-3 text-center text-sm" role="status">{{ session('status') }}</div>
   @endif
   <main id="main">{{ $slot }}</main>
-  <x-footer />
+  @if ($showFooter && ! request()->routeIs('login'))
+    <x-footer />
+  @endif
 </body>
 </html>

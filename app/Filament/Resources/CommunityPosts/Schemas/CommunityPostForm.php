@@ -29,6 +29,7 @@ class CommunityPostForm
                     ->disabled(),
                 Select::make('status')
                     ->label('Status moderasi')
+                    ->native(false)
                     ->options([
                         'pending' => 'Menunggu moderasi',
                         'approved' => 'Disetujui',

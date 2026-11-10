@@ -4,6 +4,7 @@
   heading="Login"
   description="Masuk untuk menyimpan pilihan, menyinkronkan keranjang, dan mengelola profilmu."
   quote="Keep your favorites close and your movement effortless."
+  :simple="true"
 >
   <form method="POST" action="{{ route('login.store') }}" class="mt-9 space-y-6">
     @csrf
