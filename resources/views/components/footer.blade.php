@@ -8,22 +8,20 @@
       <p class="mt-4 max-w-xs text-xs uppercase leading-5 tracking-[0.16em] text-stone">Indonesian streetwear personality.</p>
     </div>
 
-    <ul class="flex flex-wrap gap-x-6 gap-y-3 text-xs uppercase tracking-[0.14em] sm:justify-end sm:text-right">
-      <li>
-        @if (config('calmats.whatsapp_url'))
-          <a href="{{ config('calmats.whatsapp_url') }}" target="_blank" rel="noopener" class="transition-colors hover:text-accent">WhatsApp</a>
-        @else
-          <span class="text-stone">WhatsApp — segera hadir</span>
-        @endif
-      </li>
-      <li>
-        @if (config('calmats.instagram_url'))
-          <a href="{{ config('calmats.instagram_url') }}" target="_blank" rel="noopener" class="transition-colors hover:text-accent">Instagram</a>
-        @else
-          <span class="text-stone">Instagram — segera hadir</span>
-        @endif
-      </li>
-    </ul>
+<div class="sm:text-right">
+  <p class="mb-3 text-xs uppercase tracking-[0.2em] text-stone">Hubungi kami</p>
+  <ul class="flex flex-wrap gap-x-6 gap-y-3 text-xs uppercase tracking-[0.14em] sm:justify-end">
+    <li>
+      <a href="https://wa.me/6285755859946?text=Halo%20CALMATS%2C%20saya%20ingin%20bertanya." target="_blank" rel="noopener" class="transition-colors hover:text-accent">WhatsApp</a>
+    </li>
+    <li>
+      <a href="https://www.instagram.com/calmats_/" target="_blank" rel="noopener" class="transition-colors hover:text-accent">Instagram</a>
+    </li>
+    <li>
+      <a href="https://www.tiktok.com/@calmats_" target="_blank" rel="noopener" class="transition-colors hover:text-accent">TikTok</a>
+    </li>
+  </ul>
+</div>
   </div>
   <p class="border-t border-ink/10 px-5 py-6 text-center text-[0.65rem] uppercase tracking-[0.16em] text-stone">&copy; {{ date('Y') }} CALMATS. Seluruh hak cipta dilindungi.</p>
 </footer>
