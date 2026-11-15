@@ -10,23 +10,30 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        $items = [
-            ['Kaos Basic Oversize', 'Kaos', 129000, 159000, 'Cotton Combed 24s', true],
-            ['Kemeja Linen Lengan Panjang', 'Kemeja', 249000, null, 'Linen', true],
-            ['Hoodie Fleece Classic', 'Hoodie', 289000, 349000, 'Fleece', true],
-            ['Celana Chino Slim', 'Celana', 229000, null, 'Twill Stretch', false],
-            ['Jaket Coach Water Resistant', 'Jaket', 319000, null, 'Parachute', false],
-            ['Topi Dad Hat', 'Aksesoris', 89000, null, 'Cotton Twill', false],
+        $allSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+
+        $colors = [
+            ['name' => 'Hitam', 'hex' => '#191613'],
+            ['name' => 'Putih', 'hex' => '#FFFFFF'],
+            ['name' => 'Navy', 'hex' => '#1F2A44'],
         ];
 
-        foreach ($items as $i => [$name, $category, $price, $compare, $material, $featured]) {
-            $sizes = $category === 'Aksesoris' ? ['One size'] : ['S', 'M', 'L', 'XL'];
-            $colors = ['Hitam', 'Putih', 'Navy'];
+        // [nama, kategori, harga, harga normal, material, unggulan, ukuran yang dijual]
+        $items = [
+            ['Kaos Basic Oversize', 'Tops', 129000, 159000, 'Cotton Combed 24s', true, $allSizes],
+            ['Kemeja Linen Lengan Panjang', 'Tops', 249000, null, 'Linen', true, $allSizes],
+            ['Hoodie Fleece Classic', 'Outerwear', 289000, 349000, 'Fleece', true, $allSizes],
+            ['Celana Chino Slim', 'Bottoms', 229000, null, 'Twill Stretch', false, ['S', 'M', 'L', 'XL']],
+            ['Jaket Coach Water Resistant', 'Outerwear', 319000, null, 'Parachute', false, $allSizes],
+            ['Topi Dad Hat', 'Accessories', 89000, null, 'Cotton Twill', false, ['M']],
+        ];
 
+        foreach ($items as $i => [$name, $category, $price, $compare, $material, $featured, $sizes]) {
             $variants = [];
-            foreach ($sizes as $size) {
-                foreach ($colors as $color) {
-                    $variants[] = ['size' => $size, 'color' => $color, 'stock' => random_int(0, 20)];
+
+            foreach ($colors as $color) {
+                foreach ($sizes as $size) {
+                    $variants[] = ['size' => $size, 'color' => $color['name'], 'stock' => random_int(0, 20)];
                 }
             }
 

@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -16,6 +16,21 @@ class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $sizeColumns = array_map(
+            fn (string $size) => TableColumn::make($size)->width('80px')->alignCenter(),
+            StockTable::SIZES
+        );
+
+        $sizeInputs = array_map(
+            fn (string $size) => TextInput::make($size)
+                ->numeric()
+                ->integer()
+                ->minValue(0)
+                ->default(0)
+                ->placeholder('-'),
+            StockTable::SIZES
+        );
+
         return $schema
             ->components([
                 TextInput::make('slug')
@@ -46,50 +61,29 @@ class ProductForm
                     ->label('Label stok')
                     ->required()
                     ->default('Tersedia'),
-                TextInput::make('stock_quantity')
-                    ->label('Jumlah stok')
-                    ->minValue(0)
-                    ->numeric(),
-                TagsInput::make('sizes')
-                    ->label('Ukuran')
-                    ->placeholder('Tambahkan ukuran')
-                    ->required()
-                    ->columnSpanFull(),
-                Repeater::make('colors')
-                    ->label('Pilihan warna')
-                    ->schema([
+
+                Repeater::make('stock_table')
+                    ->label('Warna dan stok')
+                    ->helperText('Setiap baris adalah satu warna. Isi jumlah stok di tiap ukuran. Isi 0 jika habis, kosongkan jika ukuran itu tidak dijual.')
+                    ->table(array_merge([
+                        TableColumn::make('Nama warna')->width('180px'),
+                        TableColumn::make('Warna')->width('120px'),
+                    ], $sizeColumns))
+                    ->schema(array_merge([
                         TextInput::make('name')
-                            ->label('Nama warna')
-                            ->required(),
+                            ->required()
+                            ->maxLength(80)
+                            ->distinct(),
                         ColorPicker::make('hex')
-                            ->label('Warna')
-                            ->default('#191613')
+                            ->default(StockTable::DEFAULT_HEX)
                             ->required(),
-                    ])
-                    ->columns(2)
-                    ->defaultItems(1)
+                    ], $sizeInputs))
+                    ->default([StockTable::defaultRow()])
+                    ->minItems(1)
                     ->addActionLabel('Tambah warna')
+                    ->reorderable(false)
                     ->columnSpanFull(),
-                Repeater::make('variant_stock')
-                    ->label('Stok per varian')
-                    ->helperText('Isi nama warna dan ukuran persis seperti pilihan di atas. Jika kosong, sistem memakai jumlah stok umum.')
-                    ->schema([
-                        TextInput::make('color')
-                            ->label('Warna')
-                            ->required(),
-                        TextInput::make('size')
-                            ->label('Ukuran')
-                            ->required(),
-                        TextInput::make('stock')
-                            ->label('Stok')
-                            ->numeric()
-                            ->minValue(0)
-                            ->required(),
-                    ])
-                    ->columns(3)
-                    ->defaultItems(0)
-                    ->addActionLabel('Tambah stok varian')
-                    ->columnSpanFull(),
+
                 Textarea::make('description')
                     ->label('Deskripsi')
                     ->rows(5)
