@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -233,10 +234,15 @@ Route::middleware('auth')->group(function () {
             'caption.max' => 'Caption maksimal 500 karakter.',
         ]);
 
-        $request->user()->communityPosts()->create([
+        $post = $request->user()->communityPosts()->create([
             'image' => $request->file('image')->store('community', 'public'),
             'caption' => $validated['caption'],
             'status' => 'pending',
+        ]);
+
+        Log::info('Postingan komunitas dikirim', [
+            'post_id' => $post->id,
+            'user_id' => $request->user()->id,
         ]);
 
         return redirect(route('community').'#share')
