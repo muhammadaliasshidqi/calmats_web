@@ -1,13 +1,25 @@
 <x-layouts.app title="Shop — CALMATS">
-  <section class="mx-auto max-w-[1440px] px-5 pb-24 pt-10 lg:px-12 lg:pt-16">
-    <div class="relative overflow-hidden rounded-[2rem] border border-paper/10 bg-[#191513] px-7 text-paper shadow-[0_24px_70px_rgba(35,25,22,.16)] sm:px-12 lg:px-16">
-      <div class="relative z-10 flex min-h-[460px] max-w-5xl flex-col justify-center py-14 lg:py-20">
-        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#d8a2a5]">Collection 01</p>
-        <h1 class="mt-7 max-w-4xl font-serif text-6xl leading-[0.92] tracking-[-0.045em] sm:text-7xl lg:text-[6.5rem]">Made for the quiet<br class="hidden sm:block"> movement.</h1>
-        <p class="mt-8 max-w-xl text-base leading-7 text-paper/65">Katalog CALMATS—potongan sederhana, material berkarakter, dan ruang untuk menjadi diri sendiri.</p>
-        <p class="mt-12 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-paper/50">Designed in Indonesia <span class="mx-2 text-[#d8a2a5]">/</span> Built for everyday movement</p>
+  <section class="mx-auto max-w-[1440px] px-5 pb-28 pt-7 lg:px-12 lg:pt-10">
+    <div class="shop-luxury-hero px-7 text-paper sm:px-12 lg:px-16">
+      <div class="grid min-h-[520px] items-end gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_19rem] lg:py-16">
+        <div class="relative z-10 max-w-5xl">
+          <div class="flex items-center gap-4 text-[0.62rem] font-semibold uppercase tracking-[0.3em] text-paper/60">
+            <span>Collection 01</span><span class="h-px w-12 bg-paper/35"></span><span>2026</span>
+          </div>
+          <h1 class="mt-10 max-w-5xl font-serif text-[clamp(4rem,9vw,8.5rem)] leading-[0.82] tracking-[-0.055em]">Quiet form.<br><span class="italic text-[#e9b7b7]">Bold presence.</span></h1>
+          <div class="mt-10 flex flex-wrap items-end justify-between gap-8 border-t border-paper/20 pt-7">
+            <p class="max-w-xl text-sm leading-7 text-paper/70 sm:text-base">Koleksi esensial CALMATS—siluet tenang, material berkarakter, dan detail yang dirancang untuk bergerak bersama keseharianmu.</p>
+            <a href="#collection" class="inline-flex items-center gap-4 text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-paper transition-colors hover:text-[#e9b7b7]">Jelajahi koleksi <span class="text-lg">↓</span></a>
+          </div>
+        </div>
+        <div class="relative z-10 hidden self-stretch border-l border-paper/20 pl-8 lg:flex lg:flex-col lg:justify-between">
+          <span class="font-serif text-7xl italic text-paper/20">C/M</span>
+          <div>
+            <p class="text-[0.58rem] font-semibold uppercase tracking-[0.28em] text-paper/45">Designed in Indonesia</p>
+            <p class="mt-4 max-w-[13rem] text-sm leading-6 text-paper/65">Garments for slow days, long nights, and everything between.</p>
+          </div>
+        </div>
       </div>
-
     </div>
 
     <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-b border-ink/15 py-5 text-[0.62rem] font-semibold uppercase tracking-[0.26em] sm:gap-x-12">
@@ -17,7 +29,7 @@
       <span>CALMATS</span>
     </div>
 
-    <form method="GET" action="{{ route('shop') }}" class="mt-8 grid gap-3 rounded-[1.5rem] border border-ink/10 bg-white/45 p-4 shadow-[0_14px_38px_rgba(40,31,25,.06)] md:grid-cols-[minmax(0,1fr)_14rem] md:items-center md:p-5 lg:grid-cols-[minmax(0,1fr)_15rem_auto]">
+    <form method="GET" action="{{ route('shop') }}" class="mt-10 grid gap-3 rounded-[1.75rem] border border-ink/10 bg-white/55 p-4 shadow-[0_18px_55px_rgba(40,31,25,.07)] backdrop-blur-md md:grid-cols-[minmax(0,1fr)_14rem] md:items-center md:p-5 lg:grid-cols-[minmax(0,1fr)_15rem_auto]">
       @if ($activeCategory !== '')
         <input type="hidden" name="category" value="{{ $activeCategory }}">
       @endif
@@ -51,7 +63,7 @@
       ], fn ($value) => filled($value));
     @endphp
 
-    <nav class="flex flex-wrap gap-x-7 gap-y-3 border-b border-ink/15 py-7" aria-label="Filter kategori produk">
+    <nav class="flex flex-wrap gap-x-8 gap-y-3 border-b border-ink/15 py-8" aria-label="Filter kategori produk">
       <a href="{{ route('shop', $catalogQuery) }}" @class(['text-xs uppercase tracking-[0.16em] transition-colors hover:text-accent', 'font-semibold text-ink' => $activeCategory === '', 'text-stone' => $activeCategory !== ''])>Semua</a>
       @foreach ($categories as $category)
         <a href="{{ route('shop', [...$catalogQuery, 'category' => $category]) }}" @class(['text-xs uppercase tracking-[0.16em] transition-colors hover:text-accent', 'font-semibold text-ink' => $activeCategory === $category, 'text-stone' => $activeCategory !== $category])>{{ $category }}</a>
@@ -68,13 +80,17 @@
         @endif
       </div>
     @else
-      <div class="mt-9 flex flex-wrap items-center justify-between gap-3 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-stone">
-        <p>Menampilkan {{ $products->count() }} dari {{ $totalProducts }} produk</p>
+      <div id="collection" class="mt-12 flex scroll-mt-28 flex-wrap items-end justify-between gap-5">
+        <div>
+          <p class="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-accent">The collection</p>
+          <h2 class="mt-3 font-serif text-4xl tracking-[-0.035em] sm:text-5xl">Pieces with presence.</h2>
+        </div>
+        <p class="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-stone">Menampilkan {{ $products->count() }} dari {{ $totalProducts }} produk</p>
         @if ($search !== '')
           <p>Hasil untuk &ldquo;{{ $search }}&rdquo;</p>
         @endif
       </div>
-      <div class="reveal mt-12 grid grid-cols-1 gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="reveal mt-12 grid grid-cols-1 gap-x-7 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
         @foreach ($products as $product)
           <x-product-card :p="$product" />
         @endforeach

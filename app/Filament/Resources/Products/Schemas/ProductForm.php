@@ -35,6 +35,9 @@ class ProductForm
             ->components([
                 TextInput::make('slug')
                     ->label('Slug URL')
+                    ->prefix('/shop/')
+                    ->helperText('Isi hanya bagian akhirnya, contoh: kaos-distro.')
+                    ->alphaDash()
                     ->required()
                     ->unique(ignoreRecord: true),
                 TextInput::make('name')

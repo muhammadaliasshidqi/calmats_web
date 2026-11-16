@@ -10,8 +10,14 @@ const storedCart = (() => {
   }
 })();
 
+const normalizeSlug = (value) => String(value ?? '')
+  .split('/')
+  .filter(Boolean)
+  .at(-1) ?? '';
+
 const normalizeItem = (item) => ({
   ...item,
+  slug: normalizeSlug(item.slug),
   color: item.color ?? 'Default',
   size: item.size ?? 'One size',
   quantity: Math.max(1, Number(item.quantity) || 1),
@@ -63,6 +69,8 @@ Alpine.store('cart', {
   },
 
   add(product, size = 'One size', color = 'Default') {
+    product = { ...product, slug: normalizeSlug(product.slug) };
+
     const stockLimit = product.stock === null || product.stock === undefined
       ? 20
       : Math.max(0, Number(product.stock));

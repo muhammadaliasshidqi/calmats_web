@@ -56,6 +56,51 @@
   background: transparent;
 }
 
+.shop-luxury-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 2.25rem;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(255, 255, 255, .13), transparent 22%),
+    linear-gradient(135deg, #241817 0%, #5d181c 58%, #861c22 100%);
+  box-shadow: 0 30px 90px rgba(68, 24, 24, .22);
+}
+
+.shop-luxury-hero::after {
+  content: '';
+  position: absolute;
+  width: 30rem;
+  height: 30rem;
+  right: -8rem;
+  bottom: -18rem;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 999px;
+  box-shadow: 0 0 0 4rem rgba(255, 255, 255, .025), 0 0 0 8rem rgba(255, 255, 255, .018);
+  z-index: -1;
+}
+
+.catalog-card .product-media {
+  box-shadow: 0 18px 50px rgba(42, 30, 24, .12);
+  transition: box-shadow .45s ease, transform .45s ease;
+}
+
+.catalog-card:hover .product-media {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 70px rgba(42, 30, 24, .18);
+}
+
+.product-detail-media {
+  box-shadow: 0 30px 80px rgba(42, 30, 24, .16);
+}
+
+.product-detail-panel {
+  border: 1px solid rgba(25, 22, 19, .1);
+  background: rgba(255, 255, 255, .45);
+  box-shadow: 0 24px 70px rgba(42, 30, 24, .09);
+  backdrop-filter: blur(18px);
+}
+
 .community-media {
   overflow: hidden;
   border-radius: 1.5rem;

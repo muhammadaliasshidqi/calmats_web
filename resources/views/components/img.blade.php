@@ -8,7 +8,7 @@
 ])
 @php
   $url = $src && str_starts_with($src, 'products/')
-    ? \Illuminate\Support\Facades\Storage::disk('public')->url($src)
+    ? '/storage/'.ltrim($src, '/')
     : ($src ? asset($src) : null);
 @endphp
 <div {{ $attributes->merge(['class' => 'relative overflow-hidden rounded-[1.5rem] bg-mist']) }} x-data="{ ok: @js((bool) $src) }">
