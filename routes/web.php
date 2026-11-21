@@ -87,16 +87,20 @@ $cartPayload = function ($user): array {
         ->with('product')
         ->get()
         ->filter(fn ($item) => $item->product?->is_active)
-        ->map(fn ($item): array => [
-            'slug' => $item->product->slug,
-            'name' => $item->product->name,
-            'price' => $item->product->price,
-            'image' => $item->product->image,
-            'size' => $item->size,
-            'color' => $item->color,
-            'quantity' => $item->quantity,
-            'stock' => $item->product->availableStock($item->size, $item->color),
-        ])
+        ->map(function ($item): array {
+            $color = collect($item->product->colors ?? [])->firstWhere('name', $item->color);
+
+            return [
+                'slug' => $item->product->slug,
+                'name' => $item->product->name,
+                'price' => $item->product->price,
+                'image' => $color['image'] ?? $item->product->image,
+                'size' => $item->size,
+                'color' => $item->color,
+                'quantity' => $item->quantity,
+                'stock' => $item->product->availableStock($item->size, $item->color),
+            ];
+        })
         ->values()
         ->all();
 };

@@ -21,7 +21,11 @@ class CartSyncTest extends TestCase
         $user = User::factory()->create();
         $product = Product::factory()->create([
             'slug' => 'quiet-overshirt',
-            'colors' => [['name' => 'Black', 'hex' => '#191613']],
+            'colors' => [[
+                'name' => 'Black',
+                'hex' => '#191613',
+                'image' => 'products/colors/quiet-overshirt-black.jpg',
+            ]],
             'sizes' => ['M'],
             'variant_stock' => [
                 ['color' => 'Black', 'size' => 'M', 'stock' => 3],
@@ -39,6 +43,7 @@ class CartSyncTest extends TestCase
             ])
             ->assertOk()
             ->assertJsonPath('items.0.slug', 'quiet-overshirt')
+            ->assertJsonPath('items.0.image', 'products/colors/quiet-overshirt-black.jpg')
             ->assertJsonPath('items.0.quantity', 3)
             ->assertJsonPath('items.0.stock', 3);
 

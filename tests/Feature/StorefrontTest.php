@@ -25,7 +25,7 @@ class StorefrontTest extends TestCase
             'price' => 249000,
             'compare_at_price' => 299000,
             'colors' => [
-                ['name' => 'Black', 'hex' => '#191613'],
+                ['name' => 'Black', 'hex' => '#191613', 'image' => 'products/colors/black.jpg'],
                 ['name' => 'Natural', 'hex' => '#d8cdbf'],
             ],
             'variant_stock' => [
@@ -37,6 +37,7 @@ class StorefrontTest extends TestCase
             ->assertOk()
             ->assertSee('Essential Boxy Tee')
             ->assertSee('Black')
+            ->assertSee('black.jpg', false)
             ->assertSee('Promo')
             ->assertSee('Rp 299.000')
             ->assertSee('stockFor', false)

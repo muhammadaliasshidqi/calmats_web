@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -33,6 +33,22 @@ class AdminProductTest extends TestCase
             ->get('/admin/products')
             ->assertOk()
             ->assertSee('Produk Uji CALMATS');
+    }
+
+    public function test_admin_can_open_product_form_with_color_photos(): void
+    {
+        $product = Product::factory()->create([
+            'colors' => [[
+                'name' => 'Merah',
+                'hex' => '#ff0000',
+                'image' => 'products/colors/merah.jpg',
+            ]],
+        ]);
+
+        $this->actingAs(User::factory()->create(['is_admin' => true]))
+            ->get("/admin/products/{$product->slug}/edit")
+            ->assertOk()
+            ->assertSee('Foto');
     }
 
     public function test_authenticated_user_can_open_admin_dashboard(): void

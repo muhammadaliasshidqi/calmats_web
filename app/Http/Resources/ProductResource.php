@@ -22,7 +22,12 @@ class ProductResource extends JsonResource
             'stock_quantity' => $this->stock_quantity,
             'in_stock' => $this->stock_quantity === null || $this->stock_quantity > 0,
             'sizes' => $this->sizes,
-            'colors' => $this->colors,
+            'colors' => collect($this->colors ?? [])->map(fn (array $color): array => [
+                ...$color,
+                'image' => filled($color['image'] ?? null)
+                    ? Storage::disk('public')->url($color['image'])
+                    : null,
+            ])->values(),
             'material' => $this->material,
             'description' => $this->description,
             'image' => $this->image ? Storage::disk('public')->url($this->image) : null,

@@ -5,24 +5,21 @@ namespace App\Filament\Resources\Products\Schemas;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 
 class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $sizeColumns = array_map(
-            fn (string $size) => TableColumn::make($size)->width('80px')->alignCenter(),
-            StockTable::SIZES
-        );
-
         $sizeInputs = array_map(
             fn (string $size) => TextInput::make($size)
+                ->label($size)
                 ->numeric()
                 ->integer()
                 ->minValue(0)
@@ -66,24 +63,52 @@ class ProductForm
                     ->default('Tersedia'),
 
                 Repeater::make('stock_table')
-                    ->label('Warna dan stok')
-                    ->helperText('Setiap baris adalah satu warna. Isi jumlah stok di tiap ukuran. Isi 0 jika habis, kosongkan jika ukuran itu tidak dijual.')
-                    ->table(array_merge([
-                        TableColumn::make('Nama warna')->width('180px'),
-                        TableColumn::make('Warna')->width('120px'),
-                    ], $sizeColumns))
-                    ->schema(array_merge([
-                        TextInput::make('name')
-                            ->required()
-                            ->maxLength(80)
-                            ->distinct(),
-                        ColorPicker::make('hex')
-                            ->default(StockTable::DEFAULT_HEX)
-                            ->required(),
-                    ], $sizeInputs))
+                    ->label('Warna, foto, dan stok')
+                    ->helperText('Buat satu kartu untuk setiap warna. Angka 0 berarti habis; kosongkan ukuran yang tidak dijual.')
+                    ->schema([
+                        Grid::make([
+                            'default' => 1,
+                            'md' => 3,
+                        ])
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Nama warna')
+                                    ->placeholder('Contoh: Merah marun')
+                                    ->required()
+                                    ->maxLength(80)
+                                    ->distinct(),
+                                ColorPicker::make('hex')
+                                    ->label('Kode warna')
+                                    ->default(StockTable::DEFAULT_HEX)
+                                    ->required(),
+                                FileUpload::make('image')
+                                    ->label('Foto warna')
+                                    ->helperText('JPG, PNG, atau WebP. Maksimal 5 MB.')
+                                    ->disk('public')
+                                    ->directory('products/colors')
+                                    ->image()
+                                    ->imageEditor()
+                                    ->imagePreviewHeight('120')
+                                    ->panelLayout('compact')
+                                    ->maxSize(5120),
+                            ])
+                            ->columnSpanFull(),
+                        Fieldset::make('Stok per ukuran')
+                            ->schema($sizeInputs)
+                            ->columns([
+                                'default' => 2,
+                                'sm' => 3,
+                                'lg' => 6,
+                            ])
+                            ->columnSpanFull(),
+                    ])
+                    ->itemLabel(fn (array $state): string => filled($state['name'] ?? null)
+                        ? 'Warna: '.$state['name']
+                        : 'Warna baru')
                     ->default([StockTable::defaultRow()])
                     ->minItems(1)
                     ->addActionLabel('Tambah warna')
+                    ->collapsible()
                     ->reorderable(false)
                     ->columnSpanFull(),
 

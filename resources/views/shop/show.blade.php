@@ -4,6 +4,7 @@
     ->map(fn ($color) => [
       'name' => $color['name'] ?? 'Default',
       'hex' => $color['hex'] ?? '#191613',
+      'image' => $color['image'] ?? null,
     ])
     ->values()
     ->all();
@@ -27,9 +28,67 @@
       <span class="text-ink">{{ $product->category }}</span>
     </nav>
 
-    <div class="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1.06fr)_minmax(25rem,.94fr)] lg:gap-12 xl:gap-20">
+    <div
+      class="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1.06fr)_minmax(25rem,.94fr)] lg:gap-12 xl:gap-20"
+      x-data="{
+        color: @js($colors[0]['name']),
+        size: @js($sizes[0]),
+        colors: @js($colors),
+        variants: @js($variantStock),
+        fallbackImage: @js($product->image),
+        fallbackStock: @js($product->stock_quantity),
+        imageOk: true,
+        added: false,
+        selectedImage() {
+          return this.colors.find((item) => item.name === this.color)?.image || this.fallbackImage;
+        },
+        selectedImageUrl() {
+          const value = this.selectedImage();
+          if (!value) return '';
+          if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) return value;
+          return value.startsWith('images/') ? `/${value}` : `/storage/${value}`;
+        },
+        stockFor(size = this.size, color = this.color) {
+          const variant = this.variants.find((item) => item.color === color && item.size === size);
+          if (variant) return Number(variant.stock);
+          if (this.variants.length > 0) return 0;
+          return this.fallbackStock === null ? null : Number(this.fallbackStock);
+        },
+        isAvailable(size = this.size, color = this.color) {
+          const stock = this.stockFor(size, color);
+          return stock === null || stock > 0;
+        },
+        chooseColor(color) {
+          this.color = color;
+          this.imageOk = Boolean(this.selectedImage());
+          const availableSize = @js($sizes).find((size) => this.isAvailable(size, color));
+          if (availableSize) this.size = availableSize;
+          this.added = false;
+        },
+        stockText() {
+          const stock = this.stockFor();
+          if (stock === null) return @js($product->stock_label);
+          if (stock <= 0) return 'Stok habis untuk varian ini';
+          return `${stock} item tersedia`;
+        }
+      }"
+    >
       <div class="product-detail-media relative rounded-[2.25rem] bg-white/45 p-3 sm:p-5 lg:sticky lg:top-28">
-        <x-img class="aspect-[4/5] rounded-[1.75rem]" :src="$product->image" :alt="$product->name" label="Foto produk belum tersedia" />
+        <div class="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] bg-mist">
+          <template x-if="selectedImage()">
+            <img
+              :src="selectedImageUrl()"
+              :alt="`${@js($product->name)} warna ${color}`"
+              width="1600"
+              height="2000"
+              class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+              x-show="imageOk"
+              x-on:load="imageOk = true"
+              x-on:error="imageOk = false"
+            >
+          </template>
+          <div x-show="!selectedImage() || !imageOk" class="absolute inset-0 grid place-items-center px-4 text-center text-xs text-stone">Foto warna belum tersedia</div>
+        </div>
         <div class="absolute left-7 top-7 rounded-full border border-white/35 bg-ink/75 px-4 py-2 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-paper backdrop-blur-md">CALMATS / {{ $product->category }}</div>
         <div class="absolute bottom-8 left-8 right-8 flex items-end justify-between text-paper drop-shadow-md">
           <span class="text-[0.58rem] font-semibold uppercase tracking-[0.24em]">Collection 01</span>
@@ -37,39 +96,7 @@
         </div>
       </div>
 
-      <div
-        class="product-detail-panel rounded-[2.25rem] p-6 sm:p-9 lg:p-10 xl:p-12"
-        x-data="{
-          color: @js($colors[0]['name']),
-          size: @js($sizes[0]),
-          colors: @js($colors),
-          variants: @js($variantStock),
-          fallbackStock: @js($product->stock_quantity),
-          added: false,
-          stockFor(size = this.size, color = this.color) {
-            const variant = this.variants.find((item) => item.color === color && item.size === size);
-            if (variant) return Number(variant.stock);
-            if (this.variants.length > 0) return 0;
-            return this.fallbackStock === null ? null : Number(this.fallbackStock);
-          },
-          isAvailable(size = this.size, color = this.color) {
-            const stock = this.stockFor(size, color);
-            return stock === null || stock > 0;
-          },
-          chooseColor(color) {
-            this.color = color;
-            const availableSize = @js($sizes).find((size) => this.isAvailable(size, color));
-            if (availableSize) this.size = availableSize;
-            this.added = false;
-          },
-          stockText() {
-            const stock = this.stockFor();
-            if (stock === null) return @js($product->stock_label);
-            if (stock <= 0) return 'Stok habis untuk varian ini';
-            return `${stock} item tersedia`;
-          }
-        }"
-      >
+      <div class="product-detail-panel rounded-[2.25rem] p-6 sm:p-9 lg:p-10 xl:p-12">
         <div class="flex items-center justify-between gap-5">
           <p class="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-accent">{{ $product->category }}</p>
           <span class="rounded-full border border-ink/10 px-3 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-stone">Ready to wear</span>
@@ -93,9 +120,9 @@
 
         <fieldset class="mt-9 border-t border-ink/10 pt-8">
           <legend class="mx-auto text-[0.62rem] font-semibold uppercase tracking-[0.18em]">Pilih warna: <span class="text-accent" x-text="color"></span></legend>
-          <div class="mt-4 flex flex-wrap justify-center gap-3">
+          <div class="mt-4 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
             @foreach ($colors as $color)
-              <button type="button" x-on:click="chooseColor(@js($color['name']))" :aria-pressed="color === @js($color['name'])" :class="color === @js($color['name']) ? 'border-ink bg-ink text-paper ring-2 ring-ink/10' : 'border-ink/15 bg-paper hover:border-ink'" class="inline-flex min-w-32 items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm transition">
+              <button type="button" x-on:click="chooseColor(@js($color['name']))" :aria-pressed="color === @js($color['name'])" :class="color === @js($color['name']) ? 'border-ink bg-ink text-paper ring-2 ring-ink/10' : 'border-ink/15 bg-paper hover:border-ink'" class="inline-flex min-w-0 items-center justify-center gap-2 rounded-full border px-3 py-3 text-sm transition sm:min-w-32 sm:px-5">
                 <span class="h-4 w-4 rounded-full border border-paper/70 shadow-sm" style="background-color: {{ $color['hex'] }}"></span>
                 {{ $color['name'] }}
               </button>
@@ -105,14 +132,14 @@
 
         <fieldset class="mt-8">
           <legend class="text-[0.62rem] font-semibold uppercase tracking-[0.18em]">Pilih ukuran</legend>
-          <div class="mt-4 flex flex-wrap gap-2">
+          <div class="mt-4 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
             @foreach ($sizes as $size)
               <button type="button" x-on:click="size = @js($size); added = false" :disabled="!isAvailable(@js($size), color)" :class="size === @js($size) ? 'border-ink bg-ink text-paper shadow-md' : 'border-ink/15 bg-paper hover:border-ink'" class="min-w-14 rounded-full border px-4 py-3 text-sm transition-all disabled:cursor-not-allowed disabled:border-mist disabled:bg-mist/60 disabled:text-stone/50">{{ $size }}</button>
             @endforeach
           </div>
         </fieldset>
 
-        <button type="button" class="btn btn-accent mt-9 w-full py-4 disabled:cursor-not-allowed disabled:opacity-45" :disabled="!isAvailable()" x-on:click="$store.cart.add({ ...@js(['slug' => $product->slug, 'name' => $product->name, 'price' => $product->price, 'image' => $product->image]), stock: stockFor() }, size, color); added = true" x-text="!isAvailable() ? 'Stok varian habis' : (added ? 'Ditambahkan ke keranjang ✓' : 'Tambah ke keranjang')">Tambah ke keranjang</button>
+        <button type="button" class="btn btn-accent mt-9 w-full py-4 disabled:cursor-not-allowed disabled:opacity-45" :disabled="!isAvailable()" x-on:click="$store.cart.add({ ...@js(['slug' => $product->slug, 'name' => $product->name, 'price' => $product->price]), image: selectedImage(), stock: stockFor() }, size, color); added = true" x-text="!isAvailable() ? 'Stok varian habis' : (added ? 'Ditambahkan ke keranjang ✓' : 'Tambah ke keranjang')">Tambah ke keranjang</button>
         <p class="mt-4 text-center text-xs leading-5 text-stone">Pilihan warna dan ukuran akan disimpan bersama produk di keranjang.</p>
       </div>
     </div>

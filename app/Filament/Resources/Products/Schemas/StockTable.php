@@ -16,7 +16,7 @@ class StockTable
     /** Satu baris warna baru dengan semua ukuran bernilai 0. */
     public static function defaultRow(string $name = 'Hitam'): array
     {
-        return ['name' => $name, 'hex' => self::DEFAULT_HEX]
+        return ['name' => $name, 'hex' => self::DEFAULT_HEX, 'image' => null]
             + array_fill_keys(self::SIZES, 0);
     }
 
@@ -37,6 +37,7 @@ class StockTable
             $row = [
                 'name' => $name,
                 'hex' => $colors->firstWhere('name', $name)['hex'] ?? self::DEFAULT_HEX,
+                'image' => $colors->firstWhere('name', $name)['image'] ?? null,
             ];
 
             foreach (self::SIZES as $size) {
@@ -83,6 +84,7 @@ class StockTable
         $data['colors'] = $rows->map(fn ($row): array => [
             'name' => trim((string) ($row['name'] ?? '')),
             'hex' => $row['hex'] ?? self::DEFAULT_HEX,
+            'image' => $row['image'] ?? null,
         ])->all();
 
         $data['sizes'] = array_values(array_filter(self::SIZES, fn ($s) => isset($offered[$s])));
