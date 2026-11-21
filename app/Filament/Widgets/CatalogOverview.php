@@ -25,12 +25,12 @@ class CatalogOverview extends StatsOverviewWidget
                 ->icon('heroicon-o-shopping-bag')
                 ->color('primary')
                 ->url(ProductResource::getUrl('index')),
-            Stat::make('Produk aktif', Product::query()->where('is_active', true)->count())
+            Stat::make('Published', Product::query()->published()->count())
                 ->description('Tampil di storefront')
                 ->icon('heroicon-o-eye')
                 ->color('success')
                 ->url(ProductResource::getUrl('index')),
-            Stat::make('Stok habis', Product::query()->where('stock_quantity', '<=', 0)->count())
+            Stat::make('Sold Out', Product::query()->where('stock_quantity', '<=', 0)->where('is_preorder', false)->count())
                 ->description('Perlu diperiksa')
                 ->icon('heroicon-o-exclamation-triangle')
                 ->color('danger')

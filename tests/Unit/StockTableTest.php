@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Filament\Resources\Products\Schemas\StockTable;
+use App\Models\Product;
 use PHPUnit\Framework\TestCase;
 
 class StockTableTest extends TestCase
@@ -31,5 +32,16 @@ class StockTableTest extends TestCase
         $this->assertSame('products/colors/merah.jpg', $form[0]['image']);
         $this->assertSame(3, $form[0]['S']);
         $this->assertSame(0, $form[0]['M']);
+    }
+
+    public function test_published_products_require_an_image_for_every_color(): void
+    {
+        $errors = Product::publicationErrors([
+            'is_active' => true,
+            'colors' => [['name' => 'Merah', 'hex' => '#ff0000', 'image' => null]],
+            'variant_stock' => [['color' => 'Merah', 'size' => 'M', 'stock' => 2]],
+        ]);
+
+        $this->assertArrayHasKey('stock_table', $errors);
     }
 }

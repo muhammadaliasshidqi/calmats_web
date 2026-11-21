@@ -1,7 +1,7 @@
 <x-layouts.app title="Cart — CALMATS">
   <section
     class="mx-auto min-h-[70vh] max-w-[1440px] px-5 py-10 sm:py-14 lg:px-12 lg:py-16"
-    x-data="cartPage(@js(config('calmats.whatsapp_url')))"
+    x-data="cartPage(@js($whatsappUrl), @js(auth()->check() ? ['name' => auth()->user()->name, 'email' => auth()->user()->email] : []))"
   >
     <header class="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -44,16 +44,11 @@
 
     <div x-show="$store.cart.items.length > 0" x-cloak class="mt-10 grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-10">
       <section class="overflow-hidden rounded-[1.75rem] border border-ink/10 bg-white/55 shadow-[0_18px_55px_rgba(40,31,25,.07)]" aria-labelledby="cart-items-heading">
-        <div class="flex items-center justify-between gap-5 px-5 py-5 sm:px-7">
+        <div class="px-5 py-5 sm:px-7">
           <div>
             <p class="eyebrow">Pilihanmu</p>
             <h2 id="cart-items-heading" class="mt-1 font-serif text-3xl">Produk di keranjang</h2>
           </div>
-          <button
-            type="button"
-            x-on:click="if (confirm('Kosongkan seluruh isi keranjang?')) $store.cart.clear()"
-            class="text-xs font-semibold uppercase tracking-[0.12em] text-stone transition-colors hover:text-accent"
-          >Kosongkan</button>
         </div>
 
         <div class="divide-y divide-ink/10 border-t border-ink/10">
@@ -76,9 +71,8 @@
                     <button
                       type="button"
                       class="grid h-10 place-items-center text-lg transition-colors hover:bg-ink hover:text-paper disabled:cursor-not-allowed disabled:opacity-30"
-                      :disabled="item.quantity <= 1"
                       :aria-label="`Kurangi jumlah ${item.name}`"
-                      x-on:click="$store.cart.update(item.slug, item.size, item.color, item.quantity - 1)"
+                      x-on:click="item.quantity === 1 ? (confirm(`Hapus ${item.name} dari keranjang?`) && $store.cart.remove(item.slug, item.size, item.color)) : $store.cart.update(item.slug, item.size, item.color, item.quantity - 1)"
                     >−</button>
                     <input
                       :id="`qty-${item.slug}-${item.color}-${item.size}`"
@@ -159,18 +153,15 @@
               <span class="mb-1.5 block text-sm text-paper/85">Alamat pengiriman</span>
               <textarea x-model.trim="customer.address" required rows="3" autocomplete="street-address" placeholder="Alamat lengkap dan kode pos" class="w-full resize-none border border-paper/25 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/45 focus:border-paper/70"></textarea>
             </label>
-            <label class="block">
-              <span class="mb-1.5 block text-sm text-paper/85">Catatan <span class="text-paper/45">(opsional)</span></span>
-              <textarea x-model.trim="customer.note" rows="2" placeholder="Permintaan khusus untuk pesanan" class="w-full resize-none border border-paper/25 bg-paper/10 px-4 py-3 text-sm text-paper placeholder:text-paper/45 focus:border-paper/70"></textarea>
-            </label>
           </div>
 
-          <button type="submit" class="btn btn-accent mt-6 w-full">
-            {{ config('calmats.whatsapp_url') ? 'Pesan via WhatsApp' : 'Salin ringkasan pesanan' }}
+          <button type="submit" class="btn btn-accent mt-6 w-full disabled:cursor-wait disabled:opacity-60" :disabled="validating">
+            <span x-text="validating ? 'Memeriksa harga & stok...' : @js($whatsappUrl ? 'Pesan via WhatsApp' : 'Salin ringkasan pesanan')"></span>
             <span class="ml-3" aria-hidden="true">→</span>
           </button>
           <p class="mt-4 text-xs leading-5 text-paper/60">Kamu masih dapat memeriksa isi pesan sebelum mengirimkannya kepada admin CALMATS.</p>
           <p x-show="handoffNotice" x-cloak x-text="handoffNotice" class="mt-4 rounded-xl bg-paper/10 px-4 py-3 text-xs leading-5 text-paper" role="status"></p>
+          <button x-show="canRetryWhatsapp" x-cloak type="button" x-on:click="handoff()" class="mt-3 w-full text-center text-xs font-semibold uppercase tracking-[0.12em] text-paper underline underline-offset-4">Coba buka WhatsApp lagi</button>
         </form>
       </aside>
     </div>

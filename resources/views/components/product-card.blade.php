@@ -1,13 +1,6 @@
 @props(['p'])
 @php
-  $variantRows = collect($p['variant_stock'] ?? []);
-  $quickVariant = $variantRows->first(fn ($variant) => (int) ($variant['stock'] ?? 0) > 0);
-  $quickSize = $quickVariant['size'] ?? ($p['sizes'][0] ?? 'One size');
-  $quickColor = $quickVariant['color'] ?? data_get($p, 'colors.0.name', 'Default');
-  $quickStock = $quickVariant['stock'] ?? ($p['stock_quantity'] ?? null);
-  $quickAvailable = $variantRows->isNotEmpty()
-    ? filled($quickVariant)
-    : (($p['stock_quantity'] ?? null) === null || (int) $p['stock_quantity'] > 0);
+  $soldOut = method_exists($p, 'isSoldOut') && $p->isSoldOut();
 @endphp
 <article class="catalog-card group flex h-full flex-col">
   <a href="{{ route('shop.show', $p['slug']) }}" class="block" aria-label="Lihat detail {{ $p['name'] }}">
@@ -23,22 +16,17 @@
   <div class="mt-6 flex items-start justify-between gap-5 px-1">
     <div>
       <h3 class="font-serif text-2xl leading-tight tracking-[-0.025em]">{{ $p['name'] }}</h3>
-      <p class="mt-2 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-stone">{{ $p['stock_label'] }}</p>
     </div>
+    @unless ($soldOut)
     <div class="text-right">
       <p class="whitespace-nowrap text-sm font-semibold tracking-[0.04em] @if (!empty($p['compare_at_price']) && $p['compare_at_price'] > $p['price']) text-accent @endif">Rp {{ number_format($p['price'], 0, ',', '.') }}</p>
       @if (!empty($p['compare_at_price']) && $p['compare_at_price'] > $p['price'])
         <p class="mt-1 whitespace-nowrap text-[0.65rem] text-stone line-through">Rp {{ number_format($p['compare_at_price'], 0, ',', '.') }}</p>
       @endif
     </div>
+    @endunless
   </div>
-  <div class="mt-auto flex items-center gap-3 px-1 pt-6">
-    <a href="{{ route('shop.show', $p['slug']) }}" class="btn btn-line min-w-0 flex-1 px-4">Lihat detail</a>
-    <button
-      type="button"
-      @disabled(!$quickAvailable)
-      class="btn btn-accent min-w-0 flex-1 px-4 disabled:cursor-not-allowed disabled:bg-stone/30"
-      x-on:click="$store.cart.add(@js(['slug' => $p['slug'], 'name' => $p['name'], 'price' => $p['price'], 'image' => $p['image'] ?? null, 'stock' => $quickStock]), @js($quickSize), @js($quickColor))"
-    >{{ $quickAvailable ? '+ Keranjang' : 'Stok habis' }}</button>
+  <div class="mt-auto px-1 pt-6">
+    <a href="{{ route('shop.show', $p['slug']) }}" class="btn btn-line w-full px-4">{{ $soldOut ? 'Lihat detail produk' : 'Pilih warna & ukuran' }}</a>
   </div>
 </article>

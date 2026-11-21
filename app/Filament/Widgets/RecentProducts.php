@@ -14,7 +14,7 @@ class RecentProducts extends TableWidget
 {
     protected static ?int $sort = 3;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
@@ -36,7 +36,7 @@ class RecentProducts extends TableWidget
                     ->label('Stok')
                     ->numeric(),
                 IconColumn::make('is_active')
-                    ->label('Aktif')
+                    ->label('Published')
                     ->boolean(),
             ])
             ->headerActions([

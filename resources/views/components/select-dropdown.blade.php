@@ -3,6 +3,7 @@
   'value' => null,
   'options' => [],
   'label' => 'Pilih opsi',
+  'disabled' => false,
 ])
 
 <div
@@ -15,6 +16,7 @@
       return this.items.find((item) => item.value === this.selected)?.label ?? @js($label);
     },
     toggle() {
+      if (@js((bool) $disabled)) return;
       this.open = !this.open;
       if (this.open) {
         this.$nextTick(() => {
@@ -43,7 +45,8 @@
   <button
     x-ref="trigger"
     type="button"
-    class="flex h-12 w-full items-center justify-between gap-4 rounded-full border border-ink/15 bg-paper px-5 text-left text-base font-medium text-ink shadow-[0_8px_24px_rgba(40,31,25,.06)] transition hover:border-accent/60 hover:shadow-[0_12px_30px_rgba(40,31,25,.1)] focus:border-accent focus:ring-2 focus:ring-accent/10"
+    @disabled($disabled)
+    class="flex h-12 w-full items-center justify-between gap-4 rounded-full border border-ink/15 bg-paper px-5 text-left text-base font-medium text-ink shadow-[0_8px_24px_rgba(40,31,25,.06)] transition hover:border-accent/60 hover:shadow-[0_12px_30px_rgba(40,31,25,.1)] focus:border-accent focus:ring-2 focus:ring-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
     x-on:click="toggle()"
     :aria-expanded="open"
     aria-haspopup="listbox"

@@ -1,6 +1,6 @@
 @php
   $products = \App\Models\Product::query()
-    ->where('is_active', true)
+    ->published()
     ->where('is_featured', true)
     ->orderBy('sort_order')
     ->take(6)

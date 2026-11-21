@@ -18,6 +18,7 @@
     ->all();
   $isPromo = filled($product->compare_at_price) && $product->compare_at_price > $product->price;
   $discount = $isPromo ? (int) round((1 - ($product->price / $product->compare_at_price)) * 100) : 0;
+  $isSoldOut = $product->isSoldOut();
 @endphp
 
 <x-layouts.app :title="$product->name.' — CALMATS'">
@@ -31,15 +32,20 @@
     <div
       class="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1.06fr)_minmax(25rem,.94fr)] lg:gap-12 xl:gap-20"
       x-data="{
-        color: @js($colors[0]['name']),
-        size: @js($sizes[0]),
+        color: null,
+        size: null,
+        quantity: 1,
         colors: @js($colors),
         variants: @js($variantStock),
+        isPreorder: @js($product->is_preorder),
         fallbackImage: @js($product->image),
         fallbackStock: @js($product->stock_quantity),
         imageOk: true,
         added: false,
+        adding: false,
+        variantNotice: '',
         selectedImage() {
+          if (!this.color) return this.fallbackImage;
           return this.colors.find((item) => item.name === this.color)?.image || this.fallbackImage;
         },
         selectedImageUrl() {
@@ -49,27 +55,85 @@
           return value.startsWith('images/') ? `/${value}` : `/storage/${value}`;
         },
         stockFor(size = this.size, color = this.color) {
+          if (!size || !color) return null;
           const variant = this.variants.find((item) => item.color === color && item.size === size);
           if (variant) return Number(variant.stock);
           if (this.variants.length > 0) return 0;
           return this.fallbackStock === null ? null : Number(this.fallbackStock);
         },
         isAvailable(size = this.size, color = this.color) {
+          if (!size) return false;
+          if (!color) return this.variants.some((item) => item.size === size && Number(item.stock) > 0);
           const stock = this.stockFor(size, color);
           return stock === null || stock > 0;
         },
         chooseColor(color) {
           this.color = color;
+          this.size = null;
+          this.quantity = 1;
           this.imageOk = Boolean(this.selectedImage());
-          const availableSize = @js($sizes).find((size) => this.isAvailable(size, color));
-          if (availableSize) this.size = availableSize;
           this.added = false;
         },
+        chooseSize(size) {
+          this.size = size;
+          this.quantity = 1;
+          this.added = false;
+        },
+        resetChoices() {
+          this.color = null;
+          this.size = null;
+          this.quantity = 1;
+          this.imageOk = Boolean(this.fallbackImage);
+          this.added = false;
+          this.variantNotice = '';
+        },
+        canAdd() {
+          return Boolean(this.color && this.size && this.isAvailable());
+        },
+        maxQuantity() {
+          const stock = this.stockFor();
+          return stock === null ? 20 : Math.min(20, stock);
+        },
         stockText() {
+          if (!this.color && !this.size) return 'Pilih warna dan ukuran';
+          if (!this.color || !this.size) return 'Lengkapi pilihan varian';
           const stock = this.stockFor();
           if (stock === null) return @js($product->stock_label);
-          if (stock <= 0) return 'Stok habis untuk varian ini';
+          if (stock <= 0 && this.isPreorder) return 'Pre-order — hubungi admin untuk informasi';
+          if (stock <= 0) return 'Sold Out untuk varian ini';
           return `${stock} item tersedia`;
+        },
+        async addToCart() {
+          if (!this.canAdd()) return;
+          this.adding = true;
+          this.variantNotice = '';
+
+          try {
+            const response = await fetch(@js(route('shop.variant.validate', $product)), {
+              method: 'POST',
+              credentials: 'same-origin',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content ?? '',
+              },
+              body: JSON.stringify({ size: this.size, color: this.color, quantity: this.quantity }),
+            });
+            const payload = await response.json();
+
+            if (!response.ok) {
+              this.variantNotice = payload.message ?? 'Varian tidak dapat ditambahkan.';
+              return;
+            }
+
+            this.$store.cart.add(payload.item, this.size, this.color, payload.quantity);
+            this.quantity = payload.quantity;
+            this.added = true;
+          } catch {
+            this.variantNotice = 'Data varian belum dapat diperiksa. Coba lagi.';
+          } finally {
+            this.adding = false;
+          }
         }
       }"
     >
@@ -99,10 +163,11 @@
       <div class="product-detail-panel rounded-[2.25rem] p-6 sm:p-9 lg:p-10 xl:p-12">
         <div class="flex items-center justify-between gap-5">
           <p class="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-accent">{{ $product->category }}</p>
-          <span class="rounded-full border border-ink/10 px-3 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-stone">Ready to wear</span>
+          <span class="rounded-full border border-ink/10 px-3 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-stone">{{ $isSoldOut ? 'Sold Out' : ($product->is_preorder ? 'Ready / Pre-order' : 'Ready Stock') }}</span>
         </div>
         <h1 class="mt-7 font-serif text-5xl leading-[0.92] tracking-[-0.045em] sm:text-6xl xl:text-7xl">{{ $product->name }}</h1>
 
+        @unless ($isSoldOut)
         <div class="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-ink/10 pb-7">
           <p class="text-lg font-semibold tracking-[0.04em] text-accent">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
           @if ($isPromo)
@@ -110,6 +175,7 @@
             <span class="rounded-full bg-accent/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-accent">Promo {{ $discount }}%</span>
           @endif
         </div>
+        @endunless
 
         <p class="mt-7 max-w-xl text-base leading-8 text-stone">{{ $product->description }}</p>
 
@@ -119,7 +185,10 @@
         </dl>
 
         <fieldset class="mt-9 border-t border-ink/10 pt-8">
-          <legend class="mx-auto text-[0.62rem] font-semibold uppercase tracking-[0.18em]">Pilih warna: <span class="text-accent" x-text="color"></span></legend>
+          <div class="flex items-center justify-between gap-4">
+            <legend class="text-[0.62rem] font-semibold uppercase tracking-[0.18em]">Pilih warna: <span class="text-accent" x-text="color ?? 'belum dipilih'"></span></legend>
+            <button type="button" x-show="color || size" x-on:click="resetChoices()" class="text-xs font-semibold text-stone underline-offset-4 hover:text-accent hover:underline">Reset</button>
+          </div>
           <div class="mt-4 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
             @foreach ($colors as $color)
               <button type="button" x-on:click="chooseColor(@js($color['name']))" :aria-pressed="color === @js($color['name'])" :class="color === @js($color['name']) ? 'border-ink bg-ink text-paper ring-2 ring-ink/10' : 'border-ink/15 bg-paper hover:border-ink'" class="inline-flex min-w-0 items-center justify-center gap-2 rounded-full border px-3 py-3 text-sm transition sm:min-w-32 sm:px-5">
@@ -134,12 +203,24 @@
           <legend class="text-[0.62rem] font-semibold uppercase tracking-[0.18em]">Pilih ukuran</legend>
           <div class="mt-4 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
             @foreach ($sizes as $size)
-              <button type="button" x-on:click="size = @js($size); added = false" :disabled="!isAvailable(@js($size), color)" :class="size === @js($size) ? 'border-ink bg-ink text-paper shadow-md' : 'border-ink/15 bg-paper hover:border-ink'" class="min-w-14 rounded-full border px-4 py-3 text-sm transition-all disabled:cursor-not-allowed disabled:border-mist disabled:bg-mist/60 disabled:text-stone/50">{{ $size }}</button>
+              <button type="button" x-on:click="chooseSize(@js($size))" :disabled="!isAvailable(@js($size), color)" :class="size === @js($size) ? 'border-ink bg-ink text-paper shadow-md' : 'border-ink/15 bg-paper hover:border-ink'" class="min-w-14 rounded-full border px-4 py-3 text-sm transition-all disabled:cursor-not-allowed disabled:border-mist disabled:bg-mist/60 disabled:text-stone/50">{{ $size }}</button>
             @endforeach
           </div>
         </fieldset>
 
-        <button type="button" class="btn btn-accent mt-9 w-full py-4 disabled:cursor-not-allowed disabled:opacity-45" :disabled="!isAvailable()" x-on:click="$store.cart.add({ ...@js(['slug' => $product->slug, 'name' => $product->name, 'price' => $product->price]), image: selectedImage(), stock: stockFor() }, size, color); added = true" x-text="!isAvailable() ? 'Stok varian habis' : (added ? 'Ditambahkan ke keranjang ✓' : 'Tambah ke keranjang')">Tambah ke keranjang</button>
+        @unless ($isSoldOut)
+          <div class="mt-8 flex items-center justify-between gap-4 rounded-[1.25rem] bg-ink/[.035] p-4">
+            <span class="text-sm font-semibold">Jumlah</span>
+            <div class="inline-grid grid-cols-[2.75rem_3rem_2.75rem] overflow-hidden rounded-full border border-ink/15 bg-paper">
+              <button type="button" class="h-11 text-lg disabled:opacity-30" :disabled="quantity <= 1" x-on:click="quantity--">−</button>
+              <span class="grid h-11 place-items-center border-x border-ink/10 text-sm font-semibold" x-text="quantity"></span>
+              <button type="button" class="h-11 text-lg disabled:opacity-30" :disabled="!canAdd() || quantity >= maxQuantity()" x-on:click="quantity++">+</button>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-accent mt-5 w-full py-4 disabled:cursor-not-allowed disabled:opacity-45" :disabled="!canAdd() || adding" x-on:click="addToCart()" x-text="adding ? 'Memeriksa varian...' : (!color || !size ? 'Pilih warna dan ukuran' : (!isAvailable() ? (isPreorder ? 'Varian Pre-order — hubungi admin' : 'Varian Sold Out') : (added ? 'Ditambahkan ke keranjang ✓' : 'Tambah ke keranjang')))">Tambah ke keranjang</button>
+          <p x-show="variantNotice" x-cloak x-text="variantNotice" class="mt-3 text-center text-sm font-medium text-accent" role="alert"></p>
+        @endunless
         <p class="mt-4 text-center text-xs leading-5 text-stone">Pilihan warna dan ukuran akan disimpan bersama produk di keranjang.</p>
       </div>
     </div>

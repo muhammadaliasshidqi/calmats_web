@@ -55,6 +55,7 @@ class ProductForm
                     ->label('Harga normal sebelum promo')
                     ->numeric()
                     ->minValue(0)
+                    ->gt('price')
                     ->prefix('Rp')
                     ->helperText('Kosongkan jika produk tidak sedang promo.'),
                 TextInput::make('stock_label')
@@ -131,8 +132,13 @@ class ProductForm
                     ->label('Tampilkan di koleksi unggulan')
                     ->default(false),
                 Toggle::make('is_active')
-                    ->label('Produk aktif')
-                    ->default(true),
+                    ->label('Dipublikasikan')
+                    ->helperText('Nonaktifkan untuk menyimpan sebagai draf. Produk yang dipublikasikan wajib memiliki foto pada setiap warna.')
+                    ->default(false),
+                Toggle::make('is_preorder')
+                    ->label('Aktifkan informasi Pre-order')
+                    ->helperText('Hanya berlaku pada varian dengan stok 0 dan tidak membuat varian dapat dibeli.')
+                    ->default(false),
                 TextInput::make('sort_order')
                     ->label('Urutan tampil')
                     ->required()

@@ -12,7 +12,7 @@ class ProductController extends Controller
     public function index(ProductIndexRequest $request)
     {
         $v = $request->validated();
-        $query = Product::query()->where('is_active', true);
+        $query = Product::query()->published();
 
         if (! empty($v['q'])) {
             $term = '%'.addcslashes($v['q'], '%_\\').'%';
@@ -59,7 +59,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        abort_unless($product->is_active, 404);
+        abort_unless($product->is_active && $product->published_at, 404);
 
         return new ProductResource($product);
     }
@@ -68,7 +68,7 @@ class ProductController extends Controller
     {
         return response()->json([
             'data' => Product::query()
-                ->where('is_active', true)
+                ->published()
                 ->orderBy('category')
                 ->distinct()
                 ->pluck('category'),

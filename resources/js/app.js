@@ -2,13 +2,28 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
-const storedCart = (() => {
+const isAuthenticated = document.querySelector('meta[name="calmats-authenticated"]')?.content === '1';
+const accountId = document.querySelector('meta[name="calmats-user-id"]')?.content ?? '';
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+const guestCartKey = 'calmats-cart-guest';
+const cartKey = isAuthenticated && accountId ? `calmats-cart-user-${accountId}` : guestCartKey;
+
+const readCart = (key) => {
   try {
-    return JSON.parse(localStorage.getItem('calmats-cart')) ?? [];
+    const value = JSON.parse(localStorage.getItem(key));
+    return Array.isArray(value) ? value : [];
   } catch {
     return [];
   }
-})();
+};
+
+const legacyCart = readCart('calmats-cart');
+const storedCart = readCart(cartKey).length > 0
+  ? readCart(cartKey)
+  : (!isAuthenticated ? legacyCart : []);
+const pendingGuestCart = isAuthenticated
+  ? (readCart(guestCartKey).length > 0 ? readCart(guestCartKey) : legacyCart)
+  : [];
 
 const normalizeSlug = (value) => String(value ?? '')
   .split('/')
@@ -24,8 +39,6 @@ const normalizeItem = (item) => ({
 });
 
 const normalizedCart = Array.isArray(storedCart) ? storedCart.map(normalizeItem) : [];
-const isAuthenticated = document.querySelector('meta[name="calmats-authenticated"]')?.content === '1';
-const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
 Alpine.store('cart', {
   items: normalizedCart,
@@ -45,7 +58,7 @@ Alpine.store('cart', {
       const payload = await response.json();
       const merged = new Map();
 
-      [...this.items, ...(payload.items ?? [])].map(normalizeItem).forEach((item) => {
+      [...(payload.items ?? []), ...this.items].map(normalizeItem).forEach((item) => {
         const key = `${item.slug}::${item.color}::${item.size}`;
         const current = merged.get(key);
         merged.set(key, current
@@ -53,8 +66,22 @@ Alpine.store('cart', {
           : item);
       });
 
+      pendingGuestCart.map(normalizeItem).forEach((item) => {
+        const key = `${item.slug}::${item.color}::${item.size}`;
+        const current = merged.get(key);
+        const stockLimit = current?.stock ?? item.stock ?? 20;
+        merged.set(key, current
+          ? { ...current, quantity: Math.min(current.quantity + item.quantity, stockLimit, 20) }
+          : item);
+      });
+
       this.items = [...merged.values()];
-      this.persist();
+      localStorage.setItem(cartKey, JSON.stringify(this.items));
+
+      if (await this.sync()) {
+        localStorage.removeItem(guestCartKey);
+        localStorage.removeItem('calmats-cart');
+      }
     } catch {
       // Cart lokal tetap dapat digunakan ketika sinkronisasi tidak tersedia.
     }
@@ -68,8 +95,9 @@ Alpine.store('cart', {
     return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   },
 
-  add(product, size = 'One size', color = 'Default') {
+  add(product, size = 'One size', color = 'Default', quantity = 1) {
     product = { ...product, slug: normalizeSlug(product.slug) };
+    quantity = Math.max(1, Number(quantity) || 1);
 
     const stockLimit = product.stock === null || product.stock === undefined
       ? 20
@@ -80,10 +108,12 @@ Alpine.store('cart', {
     const existing = this.items.find((item) => item.slug === product.slug && item.size === size && item.color === color);
 
     if (existing) {
-      existing.quantity = Math.min(existing.quantity + 1, stockLimit);
+      existing.quantity = Math.min(existing.quantity + quantity, stockLimit);
       existing.stock = product.stock;
+      existing.image = product.image;
+      existing.price = product.price;
     } else {
-      this.items.push({ ...product, size, color, quantity: 1 });
+      this.items.push({ ...product, size, color, quantity: Math.min(quantity, stockLimit) });
     }
 
     this.persist();
@@ -109,7 +139,9 @@ Alpine.store('cart', {
   },
 
   persist() {
-    localStorage.setItem('calmats-cart', JSON.stringify(this.items));
+    localStorage.setItem(cartKey, JSON.stringify(this.items));
+
+    if (!isAuthenticated) localStorage.removeItem('calmats-cart');
 
     if (!isAuthenticated) return;
 
@@ -132,25 +164,30 @@ Alpine.store('cart', {
         }),
       });
 
-      if (!response.ok) return;
+      if (!response.ok) return false;
 
       const payload = await response.json();
       this.items = (payload.items ?? []).map(normalizeItem);
-      localStorage.setItem('calmats-cart', JSON.stringify(this.items));
+      localStorage.setItem(cartKey, JSON.stringify(this.items));
+
+      return true;
     } catch {
       // Perubahan tersimpan lokal dan akan dicoba kembali pada interaksi berikutnya.
+      return false;
     }
   },
 });
 
-Alpine.data('cartPage', (whatsappUrl = null) => ({
+Alpine.data('cartPage', (whatsappUrl = null, account = {}) => ({
   whatsappUrl,
   handoffNotice: '',
+  validating: false,
+  canRetryWhatsapp: false,
   customer: {
-    name: '',
+    name: account.name ?? '',
+    email: account.email ?? '',
     phone: '',
     address: '',
-    note: '',
   },
 
   format(value) {
@@ -184,10 +221,31 @@ Alpine.data('cartPage', (whatsappUrl = null) => ({
       'Ongkir: dikonfirmasi melalui WhatsApp',
       '',
       `Nama: ${this.customer.name}`,
+      this.customer.email ? `Email: ${this.customer.email}` : null,
       `No. WhatsApp: ${this.customer.phone}`,
       `Alamat: ${this.customer.address}`,
-      this.customer.note ? `Catatan: ${this.customer.note}` : null,
+      'Status: permintaan pesanan — menunggu konfirmasi admin CALMATS',
     ].filter(Boolean).join('\n');
+  },
+
+  async validateCart() {
+    const cart = Alpine.store('cart');
+    const response = await fetch('/cart/validate', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      body: JSON.stringify({
+        items: cart.items.map(({ slug, size, color, quantity, price }) => ({ slug, size, color, quantity, price })),
+      }),
+    });
+
+    if (!response.ok) throw new Error('Validasi keranjang gagal.');
+
+    return response.json();
   },
 
   async copyOrder(message) {
@@ -211,6 +269,31 @@ Alpine.data('cartPage', (whatsappUrl = null) => ({
     const cart = Alpine.store('cart');
     if (cart.items.length === 0) return;
 
+    this.validating = true;
+    this.handoffNotice = '';
+    this.canRetryWhatsapp = false;
+
+    try {
+      const validation = await this.validateCart();
+
+      if (!validation.can_checkout) {
+        this.handoffNotice = validation.messages.join(' ');
+        return;
+      }
+
+      if (validation.changed) {
+        cart.items = validation.items.map(normalizeItem);
+        cart.persist();
+        this.handoffNotice = `${validation.messages.join(' ')} Periksa perubahan, lalu lanjutkan kembali.`;
+        return;
+      }
+    } catch {
+      this.handoffNotice = 'Keranjang belum dapat divalidasi ke server. Coba lagi sebelum membuka WhatsApp.';
+      return;
+    } finally {
+      this.validating = false;
+    }
+
     const message = this.orderMessage();
 
     if (!this.whatsappUrl) {
@@ -225,9 +308,11 @@ Alpine.data('cartPage', (whatsappUrl = null) => ({
     if (!opened) {
       await this.copyOrder(message);
       this.handoffNotice = 'WhatsApp tidak dapat dibuka. Ringkasan pesanan sudah disalin sebagai fallback.';
+      this.canRetryWhatsapp = true;
       return;
     }
 
+    this.canRetryWhatsapp = false;
     this.handoffNotice = 'WhatsApp dibuka di tab baru. Periksa kembali pesan sebelum mengirim.';
   },
 }));

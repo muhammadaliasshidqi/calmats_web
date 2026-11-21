@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Models\Product;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Enums\ColumnManagerLayout;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class ProductsTable
@@ -50,7 +51,10 @@ class ProductsTable
                     ->label('Unggulan')
                     ->boolean(),
                 IconColumn::make('is_active')
-                    ->label('Aktif')
+                    ->label('Published')
+                    ->boolean(),
+                IconColumn::make('is_preorder')
+                    ->label('Pre-order')
                     ->boolean(),
                 TextColumn::make('sort_order')
                     ->label('Urutan')
@@ -69,9 +73,12 @@ class ProductsTable
                 SelectFilter::make('category')
                     ->label('Kategori')
                     ->native(false)
-                    ->options(fn (): array => \App\Models\Product::query()->orderBy('category')->distinct()->pluck('category', 'category')->all()),
+                    ->options(fn (): array => Product::query()->orderBy('category')->distinct()->pluck('category', 'category')->all()),
                 TernaryFilter::make('is_active')
-                    ->label('Produk aktif')
+                    ->label('Status publikasi')
+                    ->native(false),
+                TernaryFilter::make('is_preorder')
+                    ->label('Pre-order')
                     ->native(false),
                 TernaryFilter::make('is_featured')
                     ->label('Koleksi unggulan')

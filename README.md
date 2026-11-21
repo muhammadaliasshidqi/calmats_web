@@ -23,14 +23,15 @@ Database lokal tetap memakai SQLite agar mudah dijalankan. Untuk deployment, kon
 - Navbar (desktop + menu mobile, indikator cart, link Login)
 - Hero, Featured Collection, Brand Story, Editorial, Community, CTA, Footer
 - Halaman Shop dengan search, filter kategori, sorting, load more, dan halaman detail produk
-- Detail produk dengan pilihan warna/ukuran, foto per warna, stok per varian, serta harga promo
+- Detail produk dengan pilihan warna/ukuran tanpa pilihan otomatis, foto per warna, stok per varian, status Pre-order/Sold Out, serta harga promo
 - Halaman About dan Community
 - Community Feed dengan upload foto/caption, preview, status moderasi, dan publikasi kiriman yang disetujui
 - Cart guest di browser dan sinkronisasi SQLite untuk pengguna login, termasuk foto, varian, quantity, subtotal, serta konfirmasi hapus
 - Ringkasan pesanan dan handoff WhatsApp dengan fallback salin pesan
 - Login, registrasi, lupa/reset password, logout, halaman profil, serta login admin khusus menggunakan autentikasi Laravel
 - Model, migration, dan factory Produk
-- Dashboard admin Filament untuk CRUD produk, foto utama, dan foto per warna
+- Dashboard admin Filament untuk CRUD produk, Draft/Published, foto utama, foto per warna, Pre-order, dan pengaturan WhatsApp
+- Validasi server sebelum add-to-cart dan checkout WhatsApp untuk status publikasi, harga, serta stok terbaru
 - Moderasi kiriman Community dari dashboard admin (menunggu, disetujui, atau ditolak)
 - Tampilan responsif yang sudah diaudit untuk desktop, tablet, smartphone, navigasi, formulir, katalog, cart, autentikasi, dan dashboard admin
 - Fallback otomatis: kalau foto belum ada, tampil kotak abu-abu berlabel "placeholder"
@@ -159,6 +160,8 @@ Taruh di `public/images/calmats/` (nama harus persis sama, huruf besar-kecil ber
 Foto produk dan komunitas ditambahkan lewat komponen masing-masing.
 
 ## Konfigurasi kanal resmi
+
+Nomor WhatsApp utama dapat diubah dari **Admin → Pengaturan Situs**. Nilai `.env` berikut menjadi fallback awal sebelum pengaturan dashboard dibuat.
 
 Isi nilai berikut di `.env` ketika URL resmi sudah tersedia:
 

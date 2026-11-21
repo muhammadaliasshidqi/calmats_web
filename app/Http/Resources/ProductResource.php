@@ -20,7 +20,11 @@ class ProductResource extends JsonResource
             'on_promo' => $this->compare_at_price !== null && $this->compare_at_price > $this->price,
             'stock_label' => $this->stock_label,
             'stock_quantity' => $this->stock_quantity,
-            'in_stock' => $this->stock_quantity === null || $this->stock_quantity > 0,
+            'in_stock' => $this->hasReadyStock(),
+            'is_preorder' => $this->is_preorder,
+            'availability' => $this->isSoldOut()
+                ? 'sold_out'
+                : ($this->hasPreorderVariants() ? 'preorder' : 'ready'),
             'sizes' => $this->sizes,
             'colors' => collect($this->colors ?? [])->map(fn (array $color): array => [
                 ...$color,
@@ -32,6 +36,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'image' => $this->image ? Storage::disk('public')->url($this->image) : null,
             'is_featured' => $this->is_featured,
+            'published_at' => $this->published_at,
         ];
     }
 }

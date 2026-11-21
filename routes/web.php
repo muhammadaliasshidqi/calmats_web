@@ -2,6 +2,7 @@
 
 use App\Models\CommunityPost;
 use App\Models\Product;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
@@ -17,42 +18,46 @@ Route::view('/', 'home')->name('home');
 
 Route::get('/shop', function (Request $request) {
     $category = $request->string('category')->toString();
-    $search = trim($request->string('q')->toString());
+    $search = preg_replace('/\s+/u', ' ', trim($request->string('q')->toString())) ?? '';
+    $availability = $request->string('availability')->toString();
+    $allowedAvailability = ['ready', 'preorder', 'sold_out'];
+    $availability = in_array($availability, $allowedAvailability, true) ? $availability : '';
     $sort = $request->string('sort')->toString();
-    $allowedSorts = ['default', 'latest', 'name', 'price_asc', 'price_desc'];
-    $sort = in_array($sort, $allowedSorts, true) ? $sort : 'default';
-    $limit = min(max($request->integer('limit', 6), 6), 24);
+    $allowedSorts = ['latest', 'oldest', 'price_asc', 'price_desc'];
+    $sort = in_array($sort, $allowedSorts, true) ? $sort : 'latest';
+    $sort = $search !== '' ? 'latest' : $sort;
+    $limit = max($request->integer('limit', 6), 6);
 
-    $query = Product::query()->where('is_active', true);
+    $query = Product::query()->published();
 
     if ($category !== '') {
         $query->where('category', $category);
     }
 
     if ($search !== '') {
-        $query->where(function ($query) use ($search) {
-            $query
-                ->where('name', 'like', "%{$search}%")
-                ->orWhere('category', 'like', "%{$search}%")
-                ->orWhere('material', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
-        });
+        $term = '%'.addcslashes($search, '%_\\').'%';
+        $query->where('name', 'like', $term);
     }
 
     match ($sort) {
-        'latest' => $query->latest(),
-        'name' => $query->orderBy('name'),
+        'oldest' => $query->orderBy('published_at')->orderBy('id'),
         'price_asc' => $query->orderBy('price')->orderBy('name'),
         'price_desc' => $query->orderByDesc('price')->orderBy('name'),
-        default => $query->orderBy('sort_order')->orderBy('name'),
+        default => $query->orderByDesc('published_at')->orderBy('id'),
     };
 
-    $totalProducts = (clone $query)->count();
+    $matchingProducts = $query->get()
+        ->when($availability !== '', fn ($products) => $products
+            ->filter(fn (Product $product): bool => $product->matchesAvailability($availability))
+            ->values());
+    $totalProducts = $matchingProducts->count();
+    $products = $search !== '' ? $matchingProducts : $matchingProducts->take($limit);
 
     return view('shop.index', [
-        'products' => $query->limit($limit)->get(),
-        'categories' => Product::query()->where('is_active', true)->orderBy('category')->distinct()->pluck('category'),
+        'products' => $products,
+        'categories' => Product::query()->published()->orderBy('category')->distinct()->pluck('category'),
         'activeCategory' => $category,
+        'availability' => $availability,
         'search' => $search,
         'sort' => $sort,
         'limit' => $limit,
@@ -61,10 +66,42 @@ Route::get('/shop', function (Request $request) {
 })->name('shop');
 
 Route::get('/shop/{product:slug}', function (Product $product) {
-    abort_unless($product->is_active, 404);
+    abort_unless($product->is_active && $product->published_at, 404);
 
     return view('shop.show', compact('product'));
 })->name('shop.show');
+
+Route::post('/shop/{product:slug}/validate-variant', function (Request $request, Product $product) {
+    abort_unless($product->is_active && $product->published_at, 404);
+
+    $validated = $request->validate([
+        'size' => ['required', 'string', 'max:40'],
+        'color' => ['required', 'string', 'max:80'],
+        'quantity' => ['required', 'integer', 'min:1', 'max:20'],
+    ]);
+    $stock = $product->availableStock($validated['size'], $validated['color']);
+
+    if ($stock !== null && $stock < 1) {
+        return response()->json([
+            'message' => $product->is_preorder
+                ? 'Varian ini berstatus Pre-order dan belum dapat dimasukkan ke keranjang.'
+                : 'Varian ini sudah Sold Out.',
+        ], 409);
+    }
+
+    $color = collect($product->colors ?? [])->firstWhere('name', $validated['color']);
+
+    return response()->json([
+        'item' => [
+            'slug' => $product->slug,
+            'name' => $product->name,
+            'price' => $product->price,
+            'image' => $color['image'] ?? $product->image,
+            'stock' => $stock,
+        ],
+        'quantity' => min($validated['quantity'], $stock ?? 20, 20),
+    ]);
+})->middleware('throttle:60,1')->name('shop.variant.validate');
 
 Route::view('/about', 'about')->name('about');
 Route::get('/community', function (Request $request) {
@@ -80,13 +117,15 @@ Route::get('/community', function (Request $request) {
             : collect(),
     ]);
 })->name('community');
-Route::view('/cart', 'cart')->name('cart');
+Route::get('/cart', fn () => view('cart', [
+    'whatsappUrl' => SiteSetting::whatsappUrl(),
+]))->name('cart');
 
 $cartPayload = function ($user): array {
     return $user->cartItems()
         ->with('product')
         ->get()
-        ->filter(fn ($item) => $item->product?->is_active)
+        ->filter(fn ($item) => $item->product?->is_active && $item->product?->published_at)
         ->map(function ($item): array {
             $color = collect($item->product->colors ?? [])->firstWhere('name', $item->color);
 
@@ -104,6 +143,73 @@ $cartPayload = function ($user): array {
         ->values()
         ->all();
 };
+
+Route::post('/cart/validate', function (Request $request) {
+    $validated = $request->validate([
+        'items' => ['required', 'array', 'min:1', 'max:50'],
+        'items.*.slug' => ['required', 'string', 'max:255'],
+        'items.*.size' => ['required', 'string', 'max:40'],
+        'items.*.color' => ['required', 'string', 'max:80'],
+        'items.*.quantity' => ['required', 'integer', 'min:1', 'max:20'],
+        'items.*.price' => ['nullable', 'integer', 'min:0'],
+    ]);
+
+    $items = [];
+    $messages = [];
+    $canCheckout = true;
+    $changed = false;
+
+    foreach ($validated['items'] as $item) {
+        $product = Product::query()->published()->where('slug', $item['slug'])->first();
+
+        if (! $product) {
+            $canCheckout = false;
+            $messages[] = "{$item['slug']} sudah tidak dipublikasikan. Hapus item ini dari keranjang.";
+
+            continue;
+        }
+
+        $stock = $product->availableStock($item['size'], $item['color']);
+
+        if ($stock !== null && $stock < 1) {
+            $canCheckout = false;
+            $label = $product->is_preorder ? 'tersedia sebagai informasi Pre-order' : 'sudah Sold Out';
+            $messages[] = "{$product->name} ({$item['color']} / {$item['size']}) {$label} dan tidak dapat di-checkout.";
+
+            continue;
+        }
+
+        $quantity = min($item['quantity'], $stock ?? 20, 20);
+        $color = collect($product->colors ?? [])->firstWhere('name', $item['color']);
+        $changed = $changed || $quantity !== $item['quantity'] || ($item['price'] ?? null) !== $product->price;
+
+        if ($quantity !== $item['quantity']) {
+            $messages[] = "Jumlah {$product->name} disesuaikan menjadi {$quantity} karena stok berubah.";
+        }
+
+        if (($item['price'] ?? null) !== null && $item['price'] !== $product->price) {
+            $messages[] = "Harga {$product->name} telah diperbarui.";
+        }
+
+        $items[] = [
+            'slug' => $product->slug,
+            'name' => $product->name,
+            'price' => $product->price,
+            'image' => $color['image'] ?? $product->image,
+            'size' => $item['size'],
+            'color' => $item['color'],
+            'quantity' => $quantity,
+            'stock' => $stock,
+        ];
+    }
+
+    return response()->json([
+        'items' => $items,
+        'changed' => $changed,
+        'can_checkout' => $canCheckout,
+        'messages' => $messages,
+    ]);
+})->middleware('throttle:30,1')->name('cart.validate');
 
 Route::middleware('auth')->group(function () use ($cartPayload) {
     Route::get('/cart/data', fn (Request $request) => response()->json([
@@ -125,7 +231,7 @@ Route::middleware('auth')->group(function () use ($cartPayload) {
             foreach ($validated['items'] as $item) {
                 $product = Product::query()
                     ->where('slug', $item['slug'])
-                    ->where('is_active', true)
+                    ->published()
                     ->first();
 
                 if (! $product) {

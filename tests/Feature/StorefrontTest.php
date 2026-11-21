@@ -41,7 +41,7 @@ class StorefrontTest extends TestCase
             ->assertSee('Promo')
             ->assertSee('Rp 299.000')
             ->assertSee('stockFor', false)
-            ->assertSee('x-on:click="$store.cart.add(', false);
+            ->assertSee('x-on:click="addToCart()', false);
     }
 
     public function test_unknown_product_returns_not_found(): void
